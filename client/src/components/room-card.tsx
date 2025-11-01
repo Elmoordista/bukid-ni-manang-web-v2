@@ -18,7 +18,7 @@ export default function RoomCard({ room, onBookNow }: RoomCardProps) {
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
   // Determine primary image (prefer provided images, otherwise fallback to Unsplash)
-  const primaryImage = room.images && room.images.length > 0 ? room.images[0] : "https://images.unsplash.com/photo-1580587771525-78b9dba3b914";
+  const primaryImage = room.images && room.images.length > 0 ? room.images[0].image_url : "https://images.unsplash.com/photo-1580587771525-78b9dba3b914";
   const amenities = Array.isArray(room.amenities) ? room.amenities : [];
 
   // Build responsive srcset for external Unsplash images to serve optimized sizes and webp
@@ -62,12 +62,12 @@ export default function RoomCard({ room, onBookNow }: RoomCardProps) {
           <h3 className="text-xl font-semibold text-card-foreground" data-testid={`text-room-name-${room.id}`}>
             {room.name}
           </h3>
-          <div className="flex items-center space-x-1">
+          {/* <div className="flex items-center space-x-1">
             <Star className="h-4 w-4 text-yellow-500 fill-current" />
             <span className="text-sm text-muted-foreground" data-testid={`text-rating-${room.id}`}>
               {room.rating}
             </span>
-          </div>
+          </div> */}
         </div>
         
         <p className="text-muted-foreground mb-4" data-testid={`text-description-${room.id}`}>
@@ -78,11 +78,11 @@ export default function RoomCard({ room, onBookNow }: RoomCardProps) {
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               <span className="flex items-center space-x-1">
                 <Users className="h-4 w-4" />
-                <span data-testid={`text-guests-${room.id}`}>{room.maxGuests} guest{room.maxGuests > 1 ? 's' : ''}</span>
+                <span data-testid={`text-guests-${room.id}`}>{room.max_occupancy} guest{room.max_occupancy > 1 ? 's' : ''}</span>
               </span>
               <span className="flex items-center space-x-1">
                 <Bed className="h-4 w-4" />
-                <span data-testid={`text-beds-${room.id}`}>{(room.bedrooms ?? 1)} bed{(room.bedrooms ?? 1) > 1 ? 's' : ''}</span>
+                <span data-testid={`text-beds-${room.id}`}>{(room.number_of_beds ?? 1)} bed{(room.number_of_beds ?? 1) > 1 ? 's' : ''}</span>
               </span>
             </div>
         </div>
@@ -108,7 +108,7 @@ export default function RoomCard({ room, onBookNow }: RoomCardProps) {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-2xl font-bold text-foreground" data-testid={`text-price-${room.id}`}>
-              ₱{Number(room.price).toLocaleString()}
+              ₱{Number(room.price_per_night).toLocaleString()}
             </span>
             <span className="text-muted-foreground">/night</span>
           </div>

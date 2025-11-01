@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { useNotifications } from "@/hooks/use-notifications";
 
+import axios from "@/../axios/axiosInstance.js";
+
 import CustomerBookingCard from "@/components/customer-booking-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,24 +12,45 @@ import { Calendar, Plus } from "lucide-react";
 import { mockBookings, mockAccommodations, type Booking, type Accommodation } from "@/data/mockData";
 
 export default function MyBookings() {
+  const { toast } = useNotifications();
   const { user, isAuthenticated } = useAuth();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState([]);
   const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Load static data
-    setBookings(mockBookings.filter(booking => booking.userId === user?.id));
+    // setBookings(mockBookings);
+    // setBookings(mockBookings.filter(booking => booking.userId === user?.id));
     setAccommodations(mockAccommodations);
-    setIsLoading(false);
+    fetchMyBookings();
   }, [user]);
 
-  const bookingList = bookings || [];
+  // const bookingList = bookings || [];
   const accommodationList = accommodations || [];
 
   const getAccommodationName = (accommodationId: string) => {
     const accommodation = accommodationList.find((acc: any) => acc.id === accommodationId);
     return accommodation?.name;
+  };
+
+  const fetchMyBookings = async (page = 1) => {
+      setIsLoading(true);
+
+    try {
+      const res = await axios.get(`/front-end/get-my-bookings`);
+      if(res.data){
+        setBookings(res.data.data);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load rooms.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isAuthenticated) {
@@ -49,6 +72,10 @@ export default function MyBookings() {
       </div>
     );
   }
+
+  const handleFetchBookings = () => {
+    fetchMyBookings();
+  };
 
   return (
     <div className="min-h-screen modern-gradient">
@@ -77,9 +104,9 @@ export default function MyBookings() {
                 </Card>
               ))}
             </div>
-          ) : bookingList.length > 0 ? (
+          ) : bookings.length > 0 ? (
             <div className="space-y-6">
-              {bookingList
+              {bookings
                 .sort((a: any, b: any) => 
                   new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
                 )
@@ -87,7 +114,9 @@ export default function MyBookings() {
                   <CustomerBookingCard
                     key={booking.id}
                     booking={booking}
-                    accommodationName={getAccommodationName(booking.accommodationId)}
+                    handleFetchBookings={handleFetchBookings}
+                    accommodationName={''}
+                    // accommodationName={getAccommodationName(booking.accommodationId)}
                   />
                 ))}
             </div>

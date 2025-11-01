@@ -9,6 +9,8 @@ import { useAuth } from "@/context/auth-context";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
+import axios from "@/../axios/axiosInstance.js";
+
 export default function Accommodations() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -16,7 +18,8 @@ export default function Accommodations() {
   
   const [selectedRoom, setSelectedRoom] = useState<Accommodation | null>(null);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
-  const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
+  const [accommodations, setAccommodations] = useState([]);
+  // const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchParams, setSearchParams] = useState({
     checkIn: "",
@@ -35,7 +38,7 @@ export default function Accommodations() {
     setSearchParams({ checkIn, checkOut, guests });
 
     // Load accommodations data immediately
-    setAccommodations(mockAccommodations);
+    // setAccommodations(mockAccommodations);
     setIsLoading(false);
 
     // If there's a booking intent in the URL and the user is authenticated, open the modal
@@ -47,6 +50,11 @@ export default function Accommodations() {
       }
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
   const handleBookNow = (room: Accommodation) => {
     if (!isAuthenticated) {
       toast({ title: "Sign up required", description: "Please sign up or log in to make a booking." });
@@ -61,6 +69,24 @@ export default function Accommodations() {
   const closeBookingModal = () => {
     setBookingModalOpen(false);
     setSelectedRoom(null);
+  };
+
+  const fetchRooms = async () => {
+    setIsLoading(true)
+    try {
+      const res = await axios.get(`/front-end/get-rooms`);
+      if(res.data){
+        setAccommodations(res.data.data);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load rooms.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (false) { // Remove error handling for static data

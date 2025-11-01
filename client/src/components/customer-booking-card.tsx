@@ -10,34 +10,63 @@ import type { Booking } from "@/lib/types";
 import GCashPaymentForm from "./gcash-payment-form";
 import PaymentStatusDisplay from "./payment-status-display";
 
+import axios from "@/../axios/axiosInstance.js";
+
 interface CustomerBookingCardProps {
   booking: Booking;
   accommodationName?: string;
+  handleFetchBookings?: () => void;
 }
 
-export default function CustomerBookingCard({ booking, accommodationName }: CustomerBookingCardProps) {
+export default function CustomerBookingCard({ booking, accommodationName, handleFetchBookings }: CustomerBookingCardProps) {
   const { toast } = useToast();
   const { notifyBookingStatus } = useNotifications();
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleCancelBooking = async () => {
+  // const handleCancelBooking = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     // Simulate API call
+  //     await new Promise(resolve => setTimeout(resolve, 1500));
+      
+  //     notifyBookingStatus(booking.id, "cancelled", {
+  //       recipientEmail: booking.guestEmail,
+  //       recipientName: booking.guestName,
+  //       checkInDate: booking.checkInDate,
+  //       checkOutDate: booking.checkOutDate,
+  //       totalAmount: booking.totalAmount,
+  //       accommodationName: "Resort Booking"
+  //       // accommodationName: accommodationName || "Resort Booking"
+  //     });
+      
+  //     setIsCancelDialogOpen(false);
+  //   } catch (error: any) {
+  //     toast({
+  //       title: "Cancellation Failed",
+  //       description: error.message || "Failed to cancel booking. Please contact us directly.",
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
+
+
+   const handleCancelBooking = async () => {
     setIsProcessing(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      notifyBookingStatus(booking.id, "cancelled", {
-        recipientEmail: booking.guestEmail,
-        recipientName: booking.guestName,
-        checkInDate: booking.checkInDate,
-        checkOutDate: booking.checkOutDate,
-        totalAmount: booking.totalAmount,
-        accommodationName: accommodationName || "Resort Booking"
-      });
-      
-      setIsCancelDialogOpen(false);
+      const res = await axios.post(`/front-end/cancel-booking`, { booking_id: booking.id });
+      if(res.data){
+       toast({
+          title: "Booking Cancelled",
+          description: "Your booking has been cancelled successfully.",
+          variant: "success",
+        });
+        handleFetchBookings();
+        setIsCancelDialogOpen(false);
+      }
     } catch (error: any) {
       toast({
         title: "Cancellation Failed",
@@ -84,7 +113,8 @@ export default function CustomerBookingCard({ booking, accommodationName }: Cust
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg font-semibold">
-              {accommodationName || "Resort Booking"}
+              {"Resort Booking"}
+              {/* {accommodationName || "Resort Booking"} */}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Booking ID: {booking.id}
@@ -106,17 +136,17 @@ export default function CustomerBookingCard({ booking, accommodationName }: Cust
             <div className="flex items-center text-sm">
               <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
               <span className="font-medium">Check-in:</span>
-              <span className="ml-1">{booking.checkInDate}</span>
+              <span className="ml-1">{booking.start_date}</span>
             </div>
             <div className="flex items-center text-sm">
               <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
               <span className="font-medium">Check-out:</span>
-              <span className="ml-1">{booking.checkOutDate}</span>
+              <span className="ml-1">{booking.end_date}</span>
             </div>
             <div className="flex items-center text-sm">
               <Users className="h-4 w-4 mr-2 text-muted-foreground" />
               <span className="font-medium">Guests:</span>
-              <span className="ml-1">{booking.guestCount}</span>
+              <span className="ml-1">{booking.guest_count}</span>
             </div>
           </div>
           
@@ -124,38 +154,38 @@ export default function CustomerBookingCard({ booking, accommodationName }: Cust
             <div className="flex items-center text-sm">
               <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
               <span className="font-medium">Email:</span>
-              <span className="ml-1 text-blue-600">{booking.guestEmail}</span>
+              <span className="ml-1 text-blue-600">{booking.user?.email}</span>
             </div>
             <div className="flex items-center text-sm">
               <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
               <span className="font-medium">Phone:</span>
-              <span className="ml-1">{booking.guestPhone}</span>
+              <span className="ml-1">{booking.contact_number}</span>
             </div>
             <div className="text-sm">
               <span className="font-medium">Total:</span>
               <span className="ml-1 text-green-600 font-semibold">
-                ₱{booking.totalAmount.toLocaleString()}
+                ₱{booking.total_price.toLocaleString()}
               </span>
             </div>
           </div>
         </div>
 
-        {booking.specialRequests && (
+        {booking.guest_request && (
           <div className="pt-2 border-t">
             <div className="flex items-start text-sm">
               <MessageSquare className="h-4 w-4 mr-2 text-muted-foreground mt-0.5" />
               <div>
                 <span className="font-medium">Special Requests:</span>
-                <p className="text-muted-foreground mt-1">{booking.specialRequests}</p>
+                <p className="text-muted-foreground mt-1">{booking.guest_request}</p>
               </div>
             </div>
           </div>
         )}
 
-        {booking.createdAt && (
+        {booking.created_at && (
           <div className="pt-2 border-t">
             <p className="text-xs text-muted-foreground">
-              Booked on: {new Date(booking.createdAt).toLocaleDateString('en-US', {
+              Booked on: {new Date(booking.created_at).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
@@ -205,8 +235,8 @@ export default function CustomerBookingCard({ booking, accommodationName }: Cust
                     <p className="text-sm text-muted-foreground">
                       <strong>Booking Details:</strong><br />
                       {accommodationName || "Resort Booking"}<br />
-                      {booking.checkInDate} to {booking.checkOutDate}<br />
-                      Total: ₱{booking.totalAmount.toLocaleString()}
+                      {booking.start_date} to {booking.end_date}<br />
+                      Total: ₱{booking.total_price.toLocaleString()}
                     </p>
                   </div>
                 </div>

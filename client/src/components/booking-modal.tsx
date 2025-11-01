@@ -24,6 +24,8 @@ import { useAuth } from "@/context/auth-context";
 import { useNotifications } from "@/hooks/use-notifications";
 import { createPayment } from "@/data/mockData";
 
+import axios from "@/../axios/axiosInstance.js";
+
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -71,7 +73,7 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
   const calculateTotal = () => {
     if (!room) return 0;
     const nights = calculateNights();
-    return room.price * nights; // Use 'price' instead of 'pricePerNight'
+    return room.price_per_night * nights; // Use 'price' instead of 'pricePerNight'
   };
 
   const handleCreateBooking = async (data: BookingFormData) => {
@@ -93,22 +95,37 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
       return;
     }
 
-    console.log(data,'data')
-    return;
-
     setIsSubmitting(true);
     
     try {
       // Validate availability
-      const available = await checkAvailability(room.id, data.checkInDate, data.checkOutDate);
-      if (!available) {
-        toast({ title: "Unavailable", description: "The selected room is not available for those dates.", variant: "destructive" });
+      // const available = await checkAvailability(room.id, data.checkInDate, data.checkOutDate);
+      //check if the date is valid and start date is before end date
+      const start = new Date(data.checkInDate).getTime();
+      const end = new Date(data.checkOutDate).getTime();
+      if (start >= end) {
+        toast({ title: "Invalid Dates", description: "Check-in date must be before check-out date.", variant: "destructive" });
         setIsSubmitting(false);
         return;
       }
 
       // Create booking in mock storage
-      const created = await createBooking({
+      // const created = await createBooking({
+      //   accommodationId: room.id,
+      //   userId: user?.id || '0',
+      //   checkInDate: data.checkInDate,
+      //   checkOutDate: data.checkOutDate,
+      //   guestCount: data.guestCount,
+      //   guestName: data.guestName,
+      //   guestEmail: data.guestEmail,
+      //   guestPhone: data.guestPhone,
+      //   specialRequests: data.specialRequests,
+      //   totalAmount: calculateTotal(),
+      //   status: 'pending'
+      // });
+
+      const created = await handleSubmitBooking({
+        ...data,
         accommodationId: room.id,
         userId: user?.id || '0',
         checkInDate: data.checkInDate,
@@ -121,6 +138,9 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
         totalAmount: calculateTotal(),
         status: 'pending'
       });
+
+      console.log('Created booking:', created);
+      return false;
 
       await notifyBookingStatus(created.id, "confirmed", {
         recipientEmail: data.guestEmail,
@@ -152,6 +172,19 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
     }
   };
 
+  const handleSubmitBooking = async (data: BookingFormData) => {
+     try {
+          await axios.post("/front-end/book-room", data);
+          toast({ title: "Booking Successful", description: "Your booking has been created successfully." });
+        } catch {
+          toast({
+            title: "Error",
+            description: "Failed to create booking.",
+            variant: "destructive",
+          });
+        }
+  }
+
   const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -178,14 +211,14 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
         paymentAccountName: paymentData.accountName
       });
 
-      if (booking && paymentData.paymentMethod !== 'cash') {
-        await createPayment(booking.id, {
-          referenceNumber: paymentData.referenceNumber,
-          senderName: paymentData.accountName || formData.guestName,
-          senderPhone: formData.guestPhone,
-          amount: calculateTotal()
-        });
-      }
+      // if (booking && paymentData.paymentMethod !== 'cash') {
+      //   await createPayment(booking.id, {
+      //     referenceNumber: paymentData.referenceNumber,
+      //     senderName: paymentData.accountName || formData.guestName,
+      //     senderPhone: formData.guestPhone,
+      //     amount: calculateTotal()
+      //   });
+      // }
 
       onClose();
     } catch (error: any) {
@@ -201,7 +234,7 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
 
   const nights = calculateNights();
   const total = calculateTotal();
-  const primaryImage = room.images?.[0] || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914";
+  const primaryImage = room.images.length > 0 ? room.images[0].image_url : "https://images.unsplash.com/photo-1580587771525-78b9dba3b914";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -324,7 +357,7 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Array.from({ length: room.maxGuests }, (_, i) => i + 1).map((num) => (
+                        {Array.from({ length: room.max_occupancy }, (_, i) => i + 1).map((num) => (
                           <SelectItem key={num} value={num.toString()}>
                             {num} Guest{num > 1 ? 's' : ''}
                           </SelectItem>
