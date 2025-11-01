@@ -49,6 +49,7 @@ export default function UserManagement() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
   // Add User Modal
   const [newUser, setNewUser] = useState({
@@ -164,7 +165,25 @@ export default function UserManagement() {
   const handleSetCurrentPage = (page: number) => {
     setCurrentPage(page);
     fetchUsers(page, pageSize);
-  }
+  };
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 1000); // 1 second delay
+
+    return () => clearTimeout(handler); // cleanup on each keystroke
+  }, [searchQuery]);
+
+  // 🔹 Call API when `debouncedQuery` changes
+  useEffect(() => {
+    fetchUsers(1, pageSize, debouncedQuery);
+    setCurrentPage(1);
+  }, [debouncedQuery]);
+
+  // 🔹 On input change
+  const handleSearchUser = (query: string) => {
+    setSearchQuery(query);
+  };
 
 
   return (
@@ -248,7 +267,7 @@ export default function UserManagement() {
               <Input
                 placeholder="Search users..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchUser(e.target.value)}
                 className="pl-8"
               />
             </div>
