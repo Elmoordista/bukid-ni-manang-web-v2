@@ -95,32 +95,32 @@ export default function App() {
                     } />
                     
                     {/* Admin routes */}
-                    <Route path="/admin" element={
-                      <ProtectedRoute adminOnly={true}>
-                        <ErrorBoundary>
-                          <Admin />
-                        </ErrorBoundary>
-                      </ProtectedRoute>
-                    }>
-                      <Route index element={<AdminDashboard />} />
-                      <Route path="dashboard" element={<AdminDashboard />} />
-                      <Route path="rooms" element={<RoomManagement />} />
-                      <Route path="bookings" element={<BookingManagement />} />
-                      <Route path="payments" element={<PaymentManagement />} />
-                      <Route path="users" element={<UserManagement />} />
-                      
-                      {/* Settings routes */}
-                      <Route path="settings" element={<SettingsLayout />}>
-                        <Route index element={<Navigate to="general" replace />} />
-                        <Route path="general" element={<GeneralSettings />} />
-                        <Route path="venue" element={<VenueSettings />} />
-                        <Route path="booking" element={<BookingSettings />} />
-                        <Route path="notifications" element={<NotificationSettings />} />
-                      </Route>
+                      <Route path="/admin" element={
+                        <ProtectedRoute adminOnly={true}>
+                          <ErrorBoundary>
+                            <Admin />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="dashboard" element={<AdminDashboard />} />
+                        <Route path="rooms" element={<RoomManagement />} />
+                        <Route path="bookings" element={<BookingManagement />} />
+                        <Route path="payments" element={<PaymentManagement />} />
+                        <Route path="users" element={<UserManagement />} />
+                        
+                        {/* Settings routes */}
+                        <Route path="settings" element={<SettingsLayout />}>
+                          <Route index element={<Navigate to="general" replace />} />
+                          <Route path="general" element={<GeneralSettings />} />
+                          <Route path="venue" element={<VenueSettings />} />
+                          <Route path="booking" element={<BookingSettings />} />
+                          <Route path="notifications" element={<NotificationSettings />} />
+                        </Route>
 
-                      {/* Catch any other admin routes */}
-                      <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
-                    </Route>
+                        {/* Catch any other admin routes */}
+                        <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+                      </Route>
 
                     {/* Not Found route - catch all unmatched routes */}
                     <Route path="*" element={

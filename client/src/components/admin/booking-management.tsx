@@ -14,14 +14,17 @@ import { useNotifications } from "@/hooks/use-notifications";
 import { mockBookings } from "@/data/mockData";
 import type { Booking } from "@/data/mockData";
 
+import axios from "@/../axios/axiosInstance.js";
+
 interface BookingActionDialogProps {
   booking: Booking;
   isOpen: boolean;
   onClose: () => void;
+  handleUpdateBooking: (bookingId: number, status: string, notes: string) => void;
   action: "confirm" | "reject";
 }
 
-function BookingActionDialog({ booking, isOpen, onClose, action }: BookingActionDialogProps) {
+function BookingActionDialog({ booking, isOpen, onClose, action, handleUpdateBooking }: BookingActionDialogProps) {
   const [notes, setNotes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
@@ -40,25 +43,30 @@ function BookingActionDialog({ booking, isOpen, onClose, action }: BookingAction
       };
 
       // Update mock storage
-      const index = mockBookings.findIndex(b => b.id === booking.id);
-      if (index !== -1) {
-        mockBookings[index] = updatedBooking;
-      }
+      // const index = mockBookings.findIndex(b => b.id === booking.id);
+      // if (index !== -1) {
+      //   mockBookings[index] = updatedBooking;
+      // }
 
-      // Send notifications
-      notifyBookingStatus(booking.id, status, {
-        recipientEmail: booking.guestEmail || "",
-        recipientName: booking.guestName || "",
-        checkInDate: booking.checkInDate || "",
-        checkOutDate: booking.checkOutDate || "",
-        totalAmount: booking.totalAmount || 0,
-        accommodationName: "Room Booking", // TODO: Get actual room name
-      });
+      const response = await axios.put(`/booking/${booking.id}`,updatedBooking);
+      console.log("Booking updated:", response.data);
+
+      // // Send notifications
+      // notifyBookingStatus(booking.id, status, {
+      //   recipientEmail: booking.guestEmail || "",
+      //   recipientName: booking.guestName || "",
+      //   checkInDate: booking.checkInDate || "",
+      //   checkOutDate: booking.checkOutDate || "",
+      //   totalAmount: booking.totalAmount || 0,
+      //   accommodationName: "Room Booking", // TODO: Get actual room name
+      // });
 
       toast({
         title: `Booking ${status}`,
         description: `Successfully ${status} booking for ${booking.guestName}`,
       });
+
+      handleUpdateBooking(booking.id, status, notes);
 
       onClose();
     } catch (error: any) {
@@ -71,6 +79,51 @@ function BookingActionDialog({ booking, isOpen, onClose, action }: BookingAction
       setIsProcessing(false);
     }
   };
+
+  //  const handleAction = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     // In a real app, this would be an API call
+  //     const status = action === "confirm" ? "confirmed" : "rejected";
+  //     const updatedBooking = {
+  //       ...booking,
+  //       status,
+  //       adminNotes: notes,
+  //       updatedAt: new Date().toISOString(),
+  //     };
+
+  //     // Update mock storage
+  //     const index = mockBookings.findIndex(b => b.id === booking.id);
+  //     if (index !== -1) {
+  //       mockBookings[index] = updatedBooking;
+  //     }
+
+  //     // Send notifications
+  //     notifyBookingStatus(booking.id, status, {
+  //       recipientEmail: booking.guestEmail || "",
+  //       recipientName: booking.guestName || "",
+  //       checkInDate: booking.checkInDate || "",
+  //       checkOutDate: booking.checkOutDate || "",
+  //       totalAmount: booking.totalAmount || 0,
+  //       accommodationName: "Room Booking", // TODO: Get actual room name
+  //     });
+
+  //     toast({
+  //       title: `Booking ${status}`,
+  //       description: `Successfully ${status} booking for ${booking.guestName}`,
+  //     });
+
+  //     onClose();
+  //   } catch (error: any) {
+  //     toast({
+  //       title: "Action Failed",
+  //       description: error.message || "Failed to process booking action",
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -90,10 +143,10 @@ function BookingActionDialog({ booking, isOpen, onClose, action }: BookingAction
           <div className="space-y-2">
             <Label>Booking Details</Label>
             <div className="rounded-lg bg-muted p-4 text-sm space-y-2">
-              <p><strong>Guest:</strong> {booking.guestName}</p>
-              <p><strong>Dates:</strong> {booking.checkInDate} to {booking.checkOutDate}</p>
-              <p><strong>Guests:</strong> {booking.guestCount}</p>
-              <p><strong>Total:</strong> ₱{booking.totalAmount?.toLocaleString()}</p>
+              <p><strong>Guest:</strong> {booking.user?.name}</p>
+              <p><strong>Dates:</strong> {booking.start_date} to {booking.end_date}</p>
+              <p><strong>Guests:</strong> {booking.guest_count}</p>
+              <p><strong>Total:</strong> ₱{booking.total_price?.toLocaleString()}</p>
             </div>
           </div>
 
@@ -129,9 +182,18 @@ function BookingActionDialog({ booking, isOpen, onClose, action }: BookingAction
   );
 }
 
-export default function BookingManagement({ booking }: { booking: Booking }) {
+interface BookingManagementProps {
+  handleUpdateBooking: (bookingId: number, status: string, notes: string) => void;
+}
+
+export default function BookingManagement({ booking , handleUpdateBooking }: BookingManagementProps) {
+// export default function BookingManagement({ booking }: { booking: Booking }, { handleUpdateBooking }: BookingManagementProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isRejectOpen, setIsRejectOpen] = useState(false);
+
+  const handleUpdateBookingRecord = (bookingId: number, status: string, notes: string) => {
+    handleUpdateBooking(bookingId, status, notes);
+  };
 
   return (
     <div className="p-4 border rounded-lg bg-card space-y-4">
@@ -139,22 +201,22 @@ export default function BookingManagement({ booking }: { booking: Booking }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>
           <p className="text-sm font-medium text-muted-foreground">Guest</p>
-          <p className="text-foreground">{booking.guestName}</p>
-          <p className="text-xs text-muted-foreground">{booking.guestEmail}</p>
-          <p className="text-xs text-muted-foreground">{booking.guestPhone}</p>
+          <p className="text-foreground">{booking.user?.name}</p>
+          <p className="text-xs text-muted-foreground">{booking.userId?.email}</p>
+          <p className="text-xs text-muted-foreground">{booking.contact_number}</p>
         </div>
         
         <div>
           <p className="text-sm font-medium text-muted-foreground">Stay Duration</p>
-          <p className="text-foreground">Check-in: {new Date(booking.checkInDate || "").toLocaleDateString()}</p>
-          <p className="text-foreground">Check-out: {new Date(booking.checkOutDate || "").toLocaleDateString()}</p>
-          <p className="text-xs text-muted-foreground">{booking.guestCount} guests</p>
+          <p className="text-foreground">Check-in: {new Date(booking.start_date || "").toLocaleDateString()}</p>
+          <p className="text-foreground">Check-out: {new Date(booking.end_date || "").toLocaleDateString()}</p>
+          <p className="text-xs text-muted-foreground">{booking.guest_count} guests</p>
         </div>
 
         <div>
           <p className="text-sm font-medium text-muted-foreground">Payment</p>
-          <p className="text-foreground">₱{booking.totalAmount?.toLocaleString()}</p>
-          <p className="text-xs text-muted-foreground">Status: {booking.paymentStatus || "pending"}</p>
+          <p className="text-foreground">₱{booking.total_price?.toLocaleString()}</p>
+          <p className="text-xs text-muted-foreground">Status: {booking.status || "pending"}</p>
         </div>
 
         <div>
@@ -171,10 +233,10 @@ export default function BookingManagement({ booking }: { booking: Booking }) {
       </div>
 
       {/* Special Requests */}
-      {booking.specialRequests && (
+      {booking.guest_request && (
         <div className="mt-4">
           <p className="text-sm font-medium text-muted-foreground">Special Requests</p>
-          <p className="text-sm text-foreground mt-1">{booking.specialRequests}</p>
+          <p className="text-sm text-foreground mt-1">{booking.guest_request}</p>
         </div>
       )}
 
@@ -198,18 +260,24 @@ export default function BookingManagement({ booking }: { booking: Booking }) {
       </div>
 
       {/* Payment Details if available */}
-      {booking.paymentProof && (
+      {booking.payment && (
         <div className="mt-4 p-3 bg-muted rounded-lg">
           <p className="text-sm font-medium text-muted-foreground">Payment Information</p>
           <div className="grid grid-cols-2 gap-4 mt-2 text-sm">
             <div>
-              <p className="text-muted-foreground">Reference Number</p>
-              <p>{booking.paymentProof.referenceNumber || "N/A"}</p>
+              <p className="text-muted-foreground">Payment Method</p>
+              <p>{booking.payment.payment_method || "N/A"}</p>
             </div>
-            <div>
+            {booking.payment.payment_method == 'gcash' && 
+              <div>
+                <p className="text-muted-foreground">Reference Number</p>
+                <p>{booking.payment.reference_number || "N/A"}</p>
+              </div>
+            }
+            {/* <div>
               <p className="text-muted-foreground">Sender Name</p>
-              <p>{booking.paymentProof.senderName || "N/A"}</p>
-            </div>
+              <p>{booking.payment.senderName || "N/A"}</p>
+            </div> */}
           </div>
         </div>
       )}
@@ -218,11 +286,13 @@ export default function BookingManagement({ booking }: { booking: Booking }) {
         booking={booking}
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
+        handleUpdateBooking ={handleUpdateBookingRecord}
         action="confirm"
       />
       <BookingActionDialog
         booking={booking}
         isOpen={isRejectOpen}
+        handleUpdateBooking ={handleUpdateBookingRecord}
         onClose={() => setIsRejectOpen(false)}
         action="reject"
       />
