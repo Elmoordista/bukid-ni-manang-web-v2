@@ -1,4 +1,7 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
+import axios from "@/../axios/axiosInstance.js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -20,8 +23,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MoreHorizontal, Plus, Search, UserPlus } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import { Eye, EyeOff, MoreHorizontal, Search, UserPlus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+// import { toast } from "@/components/ui/use-toast";
+
 
 interface User {
   id: string;
@@ -33,88 +38,138 @@ interface User {
 }
 
 export default function UserManagement() {
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: "1",
-      name: "Juan Dela Cruz",
-      email: "juan@example.com",
-      role: "user",
-      status: "active",
-      lastLogin: "2023-10-24T10:00:00"
-    },
-    {
-      id: "2",
-      name: "Maria Santos",
-      email: "maria@example.com",
-      role: "admin",
-      status: "active",
-      lastLogin: "2023-10-24T09:30:00"
-    }
-  ]);
-
+  const { toast } = useToast();
+  const [users, setUsers] = useState<User[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  // Add User Modal
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
     role: "user" as const,
+    password: "",
   });
 
-  const handleAddUser = () => {
-    if (!newUser.name || !newUser.email) {
+  // Debounce search
+  // useEffect(() => {
+  //   const delay = setTimeout(() => {
+  //     setCurrentPage(1);
+  //     fetchUsers();
+  //   }, 500);
+  //   return () => clearTimeout(delay);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [searchQuery]);
+
+  useEffect(() => {
+    fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // }, [currentPage, pageSize]);
+
+  const fetchUsers = async (current_page = currentPage, page_size = pageSize, search = searchQuery) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/user/get-users`, {
+        params: {
+          page: current_page,
+          pageSize: page_size,
+          search: search,
+        },
+      });
+      setUsers(response.data.data.data);
+      setTotalItems(response.data.data.total);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load users.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  const handleAddUser = async () => {
+    if (!newUser.name || !newUser.email || !newUser.password) {
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
-    const user: User = {
-      id: (users.length + 1).toString(),
-      ...newUser,
-      status: "active",
-    };
-
-    setUsers([...users, user]);
-    setIsAddUserOpen(false);
-    setNewUser({ name: "", email: "", role: "user" });
-    
-    toast({
-      title: "Success",
-      description: "User has been successfully added.",
-    });
+    try {
+      const { data } = await axios.post(`/user`, {
+        ...newUser,
+        account_type: newUser.role,
+      });
+      toast({ title: "Success", description: "User added successfully." });
+      setIsAddUserOpen(false);
+      setNewUser({ name: "", email: "", role: "user", password: "" });
+      fetchUsers(); // refresh
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message || "Failed to add user.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdateUserStatus = (userId: string, newStatus: User['status']) => {
-    setUsers(users.map(user => 
-      user.id === userId ? { ...user, status: newStatus } : user
-    ));
-    
-    toast({
-      title: "Status Updated",
-      description: "User status has been successfully updated.",
-    });
+  const handleUpdateUserStatus = async (userId: string, newStatus: User["status"]) => {
+    const confirmed = window.confirm("Are you sure you want to update this user's status?");
+    if (!confirmed) return;
+    try {
+      await axios.patch(`/user/${userId}`, { status: newStatus });
+      toast({ title: "Status Updated", description: "User status updated." });
+      fetchUsers();
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to update user status.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdateUserRole = (userId: string, newRole: User['role']) => {
-    setUsers(users.map(user => 
-      user.id === userId ? { ...user, role: newRole } : user
-    ));
-    
-    toast({
-      title: "Role Updated",
-      description: "User role has been successfully updated.",
-    });
+  const handleUpdateUserRole = async (userId: string, newRole: User["role"]) => {
+    const confirmed = window.confirm("Are you sure you want to update this user's role?");
+    if (!confirmed) return;
+
+    try {
+      await axios.patch(`/user/${userId}`, { account_type: newRole });
+      toast({ title: "Role Updated", description: "User role updated." });
+      fetchUsers();
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to update user role.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleSetCurrentPage = (page: number) => {
+    setCurrentPage(page);
+    fetchUsers(page, pageSize);
+  }
+
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">User Management</h1>
@@ -130,43 +185,48 @@ export default function UserManagement() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add New User</DialogTitle>
-              <DialogDescription>
-                Create a new user account. All fields are required.
-              </DialogDescription>
+              <DialogDescription>Fill in all required fields.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <label htmlFor="name">Full Name</label>
-                <Input
-                  id="name"
-                  value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="email">Email</label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="role">Role</label>
-                <Select
-                  value={newUser.role}
-                  onValueChange={(value: "admin" | "user") => setNewUser({ ...newUser, role: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Input
+                placeholder="Full name"
+                value={newUser.name}
+                onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+              />
+              <Input
+                placeholder="Email"
+                type="email"
+                value={newUser.email}
+                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+              />
+              <Select
+                value={newUser.role}
+                onValueChange={(v: "admin" | "user") => setNewUser({ ...newUser, role: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+               <div className="relative">
+                  <Input
+                    placeholder="Password"
+                    type={showPassword ? "text" : "password"}
+                    value={newUser.password}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    className="pr-10" // space for the icon
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-2 top-2.5 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddUserOpen(false)}>
@@ -178,6 +238,7 @@ export default function UserManagement() {
         </Dialog>
       </div>
 
+      {/* Table */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -206,62 +267,131 @@ export default function UserManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={
-                        user.status === "active" ? "success" : 
-                        user.status === "inactive" ? "secondary" : 
-                        "destructive"
-                      }
-                    >
-                      {user.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => handleUpdateUserRole(user.id, user.role === "admin" ? "user" : "admin")}
-                        >
-                          Change Role to {user.role === "admin" ? "User" : "Admin"}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleUpdateUserStatus(user.id, user.status === "active" ? "inactive" : "active")}
-                        >
-                          {user.status === "active" ? "Deactivate" : "Activate"} User
-                        </DropdownMenuItem>
-                        {user.status !== "suspended" && (
+              {!loading &&
+                users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={user.account_type === "admin" ? "default" : "secondary"}>
+                        {user.account_type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          user.status === "active"
+                            ? "success"
+                            : user.status === "inactive"
+                            ? "secondary"
+                            : "destructive"
+                        }
+                      >
+                        {user.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {user.created_at ? new Date(user.created_at).toLocaleString() : "Never"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => handleUpdateUserStatus(user.id, "suspended")}
-                            className="text-destructive"
+                            onClick={() =>
+                              handleUpdateUserRole(user.id, user.account_type === "admin" ? "user" : "admin")
+                            }
                           >
-                            Suspend User
+                            Change Role to {user.account_type === "admin" ? "User" : "Admin"}
                           </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleUpdateUserStatus(
+                                user.id,
+                                user.status === "active" ? "inactive" : "active"
+                              )
+                            }
+                          >
+                            {user.status === "active" ? "Deactivate" : "Activate"} User
+                          </DropdownMenuItem>
+                          {user.status !== "active" && (
+                            <DropdownMenuItem
+                              onClick={() => handleUpdateUserStatus(user.id, "inactive")}
+                              className="text-destructive"
+                            >
+                              Suspend User
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              {loading && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-6">
+                    Loading...
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
+              {!loading && users.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
+                    No users found.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Rows per page:</span>
+              <Select
+                value={pageSize.toString()}
+                onValueChange={(v) => {
+                  setPageSize(Number(v));
+                  setCurrentPage(1);
+                  fetchUsers(1, Number(v));
+                }}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue placeholder="5" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => handleSetCurrentPage(currentPage - 1)}
+              >
+                Previous
+              </Button>
+              <span className="text-sm">
+                Page {currentPage} of {totalPages || 1}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === totalPages || totalPages === 0}
+                onClick={() => handleSetCurrentPage(currentPage + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
