@@ -14,7 +14,10 @@ export function ProtectedRoute({ children, adminOnly = false }: ProtectedRoutePr
     return <Spinner />;
   }
 
-  if (!isAuthenticated) {
+  // if (!isAuthenticated) {
+  //   return <Navigate to="/login" />;
+  // }
+  if (!user) {
     return <Navigate to="/login" />;
   }
 
