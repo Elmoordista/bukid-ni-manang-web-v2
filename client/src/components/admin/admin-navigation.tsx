@@ -367,6 +367,7 @@ export default function AdminNavigation() {
             </div>
           </div>
         </div>
+      </div>
     </nav>
   );
 }
