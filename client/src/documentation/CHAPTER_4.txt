@@ -1,0 +1,137 @@
+CHAPTER 4: METHODOLOGY, RESULTS, AND DISCUSSION
+
+4.1 Introduction
+---------------
+The development of the Bukid ni Manang Booking System followed the System Development 
+Lifecycle (SDLC), a structured framework comprising Planning, Analysis, Design, 
+Implementation, Testing, and Maintenance phases. This approach ensured a systematic 
+process to create a web-based booking system with email notifications to streamline 
+accommodation bookings, reduce guest wait times, and enhance service quality at 
+Bukid ni Manang Resort. This chapter details the application of each SDLC phase, 
+requirements analysis, system design, implementation, testing, and results, 
+demonstrating the system's alignment with the resort's operational needs.
+
+4.2 Methodology
+--------------
+
+4.2.1 System Development Lifecycle (SDLC)
+The SDLC guided the project through the following phases:
+
+1. Planning
+   - Developed strategy for web-based booking system with email notifications
+   - Addressed inefficiencies in manual booking process
+   - Set objectives for improved guest experience and reduced wait times
+   - Established operational efficiency goals
+
+2. Analysis
+   - Conducted discussions with resort staff
+   - Gathered guest feedback
+   - Identified inefficiencies:
+     * Delays in booking confirmations
+     * Manual record-keeping issues
+   - Documented user needs:
+     * Secure registration system
+     * Accommodation browsing interface
+     * Automated notification system
+
+3. Design
+   - Created system architecture using:
+     * Data Flow Diagrams (DFD)
+     * Functional Decomposition Diagrams (FDD)
+     * Entity Relationship Diagrams (ERD)
+   - Designed core features:
+     * User registration system
+     * Booking management interface
+     * Payment processing system
+     * Administrative dashboard
+
+4. Implementation
+   - Utilized modern development tools and frameworks
+   - Conducted iterative debugging processes
+   - Ensured functionality and reliability
+
+5. Testing
+   - Performed comprehensive testing:
+     * Unit testing
+     * Integration testing
+     * Usability testing
+   - Resolved issues based on feedback
+
+6. Maintenance
+   - Established monitoring systems
+   - Implemented regular updates
+   - Optimized system performance
+
+4.2.2 Requirements Analysis
+Key functionalities identified through stakeholder interviews and guest feedback:
+
+A. Core System Requirements
+   - Efficient booking scheduling
+   - Reduced guest wait times
+   - Secure registration process
+   - Email notification system
+   - Data security measures
+   - Enhanced usability
+
+B. Specific Functionalities
+   1. User Registration
+   2. Accommodation Browsing
+   3. Booking Management
+   4. Payment Processing
+   5. Administrative Controls
+
+4.2.3 Requirements Documentation
+
+Table 4.1: Functional Requirements of Web-App Booking System
+-----------------------------------------------------------
+| Functionality          | Description                       |
+|-----------------------|-----------------------------------|
+| Registration          | - User information storage         |
+|                       | - Email verification              |
+|                       | - Password security               |
+|-----------------------|-----------------------------------|
+| Email Notification    | - Account verification            |
+|                       | - Booking confirmations           |
+|                       | - Payment receipts                |
+|-----------------------|-----------------------------------|
+| Login/Logout          | - Secure access control           |
+|                       | - Session management              |
+|-----------------------|-----------------------------------|
+| Book Accommodation    | - Room selection                  |
+|                       | - Date scheduling                 |
+|                       | - Guest count management          |
+|-----------------------|-----------------------------------|
+| Admin Management      | - Guest record access             |
+|                       | - Booking management              |
+|                       | - Accommodation updates           |
+|-----------------------|-----------------------------------|
+| Dashboard             | - Daily statistics                |
+|                       | - Booking summaries              |
+|                       | - Revenue reports                 |
+-----------------------------------------------------------
+
+Table 4.2: Non-Functional Requirements
+------------------------------------
+| Requirement    | Description                              |
+|----------------|------------------------------------------|
+| Portability    | - Cross-device compatibility             |
+|                | - Multi-browser support                  |
+|----------------|------------------------------------------|
+| Security       | - JWT authentication                     |
+|                | - Encrypted credentials                  |
+|                | - Access control                         |
+|----------------|------------------------------------------|
+| Maintainability| - Easy updates                          |
+|                | - Troubleshooting capability            |
+|----------------|------------------------------------------|
+| Reliability    | - Error-free core functions             |
+|                | - Consistent performance                 |
+|----------------|------------------------------------------|
+| Scalability    | - Handle increased load                 |
+|                | - Performance optimization              |
+|----------------|------------------------------------------|
+| Performance    | - Quick response times                  |
+|                | - Efficient processing                  |
+------------------------------------
+
+[Continued in CHAPTER_4_2.txt...]

@@ -1,0 +1,395 @@
+BUKID NI MANANG - DETAILED DATABASE SPECIFICATIONS
+=================================================
+
+1. AUTHENTICATION & USER MANAGEMENT
+---------------------------------
+Implementation Details:
+a) Password Requirements:
+   - Minimum 8 characters
+   - Must contain uppercase and lowercase
+   - Must contain at least one number
+   - Must contain special character
+   - Stored using bcrypt with salt rounds = 10
+
+b) User Roles and Permissions:
+   admin:
+   - Full access to admin dashboard
+   - Manage all bookings and rooms
+   - Configure venue settings
+   - Access financial reports
+   - Manage other users
+
+   user:
+   - View room availability
+   - Make bookings
+   - View own bookings
+   - Update profile
+   - Access virtual tour
+
+c) Session Management:
+   - JWT token-based authentication
+   - Token expiry: 24 hours
+   - Refresh token validity: 7 days
+   - Store refresh tokens in separate table
+Database Name: bukid_ni_manang
+Description: Resort Management System Database
+
+Table Structure
+--------------
+
+1. USERS TABLE
+   - Purpose: Stores user account information
+   - Primary Key: id (VARCHAR(36))
+   Fields:
+   - email: VARCHAR(255) UNIQUE - User's email address
+   - firstName: VARCHAR(100) - User's first name
+   - lastName: VARCHAR(100) - User's last name
+   - role: ENUM('admin', 'user') - User's role in the system
+   - password: VARCHAR(255) - Hashed password
+   - createdAt: TIMESTAMP - Account creation date
+   - updatedAt: TIMESTAMP - Last update date
+
+2. VENUE SETTINGS TABLE
+   - Purpose: Stores resort venue configuration
+   - Primary Key: id (VARCHAR(36))
+   Fields:
+   - venueName: VARCHAR(255) - Name of the resort
+   - address: TEXT - Full address
+   - contactEmail: VARCHAR(255) - Contact email
+   - contactPhone: VARCHAR(20) - Contact phone number
+   - description: TEXT - Venue description
+   - checkInTime: TIME - Standard check-in time (Default: 14:00)
+   - checkOutTime: TIME - Standard check-out time (Default: 12:00)
+   - gcashNumber: VARCHAR(20) - GCash payment number
+   - policies: TEXT - Venue policies (JSON format)
+   - location: JSON - Coordinates for map integration
+   - socialMedia: JSON - Social media links
+   - businessHours: JSON - Operating hours
+   - amenities: JSON - Resort-wide amenities
+   - updatedAt: TIMESTAMP - Last update date
+
+   JSON Structures:
+   a) policies: {
+      "cancellation": string,
+      "payment": string,
+      "houseRules": string[],
+      "checkIn": string[],
+      "checkOut": string[],
+      "restrictions": string[]
+   }
+
+   b) location: {
+      "latitude": number,
+      "longitude": number,
+      "googleMapsUrl": string
+   }
+
+   c) socialMedia: {
+      "facebook": string,
+      "instagram": string,
+      "twitter": string,
+      "website": string
+   }
+
+   d) businessHours: {
+      "monday": { "open": "08:00", "close": "20:00" },
+      "tuesday": { "open": "08:00", "close": "20:00" },
+      ...
+      "sunday": { "open": "08:00", "close": "20:00" }
+   }
+
+   e) amenities: {
+      "wifi": boolean,
+      "parking": boolean,
+      "restaurant": boolean,
+      "swimmingPool": boolean,
+      "garden": boolean,
+      "security": boolean
+   }
+
+3. ROOMS TABLE
+   - Purpose: Manages room inventory
+   - Primary Key: id (VARCHAR(36))
+   Fields:
+   - name: VARCHAR(255) - Room name
+   - type: VARCHAR(100) - Room type
+   - description: TEXT - Room description
+   - capacity: INT - Maximum guests
+   - basePrice: DECIMAL(10,2) - Base room price
+   - status: ENUM('available', 'occupied', 'maintenance', 'reserved')
+   - amenities: JSON - Room amenities
+   - images: JSON - Room images
+   - floorArea: DECIMAL(6,2) - Room size in square meters
+   - bedConfiguration: JSON - Bed details
+   - viewType: ENUM('mountain', 'garden', 'pool')
+   - floor: INT - Floor number
+   - accessibility: JSON - Accessibility features
+   - additionalFeatures: JSON - Extra amenities
+   - maintenanceHistory: JSON - Maintenance records
+   - pricing: JSON - Dynamic pricing rules
+   - createdAt/updatedAt: TIMESTAMP
+
+   JSON Structures:
+   a) amenities: {
+      "airConditioning": boolean,
+      "wifi": boolean,
+      "tv": boolean,
+      "minibar": boolean,
+      "bathroom": {
+         "type": "private|shared",
+         "shower": boolean,
+         "bathtub": boolean,
+         "hotWater": boolean
+      },
+      "balcony": boolean,
+      "kitchenette": boolean
+   }
+
+   b) bedConfiguration: {
+      "type": "single|double|queen|king",
+      "count": number,
+      "extraBeds": {
+         "available": boolean,
+         "maxCount": number,
+         "pricePerBed": number
+      }
+   }
+
+   c) accessibility: {
+      "wheelchairAccessible": boolean,
+      "groundFloor": boolean,
+      "nearElevator": boolean,
+      "specialBathroom": boolean
+   }
+
+   d) pricing: {
+      "basePrice": number,
+      "weekendRate": number,
+      "peakSeasonRate": number,
+      "offSeasonRate": number,
+      "specialRates": [{
+         "startDate": string,
+         "endDate": string,
+         "rate": number,
+         "description": string
+      }]
+   }
+
+   e) maintenanceHistory: [{
+      "date": string,
+      "type": "routine|repair|deep-cleaning",
+      "description": string,
+      "cost": number,
+      "nextScheduled": string
+   }]
+
+4. BOOKINGS TABLE
+   - Purpose: Tracks all room reservations
+   - Primary Key: id (VARCHAR(36))
+   Fields:
+   - userId: VARCHAR(36) - Reference to users table
+   - roomId: VARCHAR(36) - Reference to rooms table
+   - checkInDate: DATE - Check-in date
+   - checkOutDate: DATE - Check-out date
+   - numberOfGuests: INT - Number of guests
+   - totalAmount: DECIMAL(10,2) - Total booking amount
+   - status: ENUM('pending', 'confirmed', 'cancelled', 'completed', 'no-show')
+   - specialRequests: TEXT - Special requests
+   - guestDetails: JSON - Guest information
+   - priceBreakdown: JSON - Detailed costs
+   - addOns: JSON - Additional services
+   - cancelDetails: JSON - Cancellation info
+   - checkInTime: TIME - Actual check-in
+   - checkOutTime: TIME - Actual check-out
+   - ratingAndReview: JSON - Guest feedback
+   - createdAt/updatedAt: TIMESTAMP
+
+   JSON Structures:
+   a) guestDetails: {
+      "primaryGuest": {
+         "name": string,
+         "email": string,
+         "phone": string,
+         "nationality": string,
+         "idType": string,
+         "idNumber": string
+      },
+      "additionalGuests": [{
+         "name": string,
+         "age": number
+      }]
+   }
+
+   b) priceBreakdown: {
+      "roomRate": number,
+      "extraBedding": number,
+      "addOns": number,
+      "taxes": number,
+      "discount": {
+         "type": string,
+         "amount": number,
+         "code": string
+      },
+      "deposit": number
+   }
+
+   c) addOns: [{
+      "service": string,
+      "quantity": number,
+      "price": number,
+      "notes": string,
+      "status": string
+   }]
+
+   d) cancelDetails: {
+      "date": string,
+      "reason": string,
+      "refundAmount": number,
+      "refundStatus": string,
+      "processedBy": string
+   }
+
+   e) ratingAndReview: {
+      "rating": number,
+      "cleanliness": number,
+      "service": number,
+      "amenities": number,
+      "review": string,
+      "photos": string[],
+      "response": {
+         "text": string,
+         "date": string,
+         "by": string
+      }
+   }
+
+5. PAYMENTS TABLE
+   - Purpose: Tracks all payment transactions
+   - Primary Key: id (VARCHAR(36))
+   Fields:
+   - bookingId: VARCHAR(36) - Reference to bookings
+   - amount: DECIMAL(10,2) - Payment amount
+   - paymentMethod: ENUM('gcash', 'bank_transfer', 'cash', 'card')
+   - status: ENUM('pending', 'completed', 'failed', 'refunded', 'partially_refunded')
+   - transactionReference: VARCHAR(255)
+   - paymentDate: TIMESTAMP
+   - paymentDetails: JSON - Method-specific details
+   - receiptInfo: JSON - Receipt details
+   - refundDetails: JSON - Refund information
+   - metadata: JSON - Additional data
+   - createdAt/updatedAt: TIMESTAMP
+
+   JSON Structures:
+   a) paymentDetails: {
+      "gcash": {
+         "accountName": string,
+         "accountNumber": string,
+         "referenceNumber": string,
+         "screenshot": string
+      },
+      "bankTransfer": {
+         "bankName": string,
+         "accountNumber": string,
+         "accountName": string,
+         "referenceNumber": string,
+         "proofOfTransfer": string
+      },
+      "card": {
+         "type": string,
+         "last4": string,
+         "expiryMonth": string,
+         "expiryYear": string,
+         "authorizationCode": string
+      }
+   }
+
+   b) receiptInfo: {
+      "receiptNumber": string,
+      "taxAmount": number,
+      "subtotal": number,
+      "discounts": [{
+         "type": string,
+         "amount": number
+      }],
+      "issuedBy": string,
+      "issuedDate": string,
+      "pdfUrl": string
+   }
+
+   c) refundDetails: {
+      "amount": number,
+      "reason": string,
+      "approvedBy": string,
+      "refundDate": string,
+      "method": string,
+      "status": string,
+      "notes": string
+   }
+
+   d) metadata: {
+      "ipAddress": string,
+      "deviceInfo": string,
+      "location": string,
+      "userAgent": string
+   }
+
+6. NOTIFICATIONS TABLE
+   - Purpose: System notifications
+   - Primary Key: id (VARCHAR(36))
+   Fields:
+   - userId: VARCHAR(36) - Reference to users
+   - title: VARCHAR(255) - Notification title
+   - message: TEXT - Notification content
+   - type: ENUM('booking', 'payment', 'system')
+   - isRead: BOOLEAN - Read status
+   - createdAt: TIMESTAMP
+
+7. BOOKING SETTINGS TABLE
+   - Purpose: Booking rules configuration
+   - Primary Key: id (VARCHAR(36))
+   Fields:
+   - minAdvanceBookingDays: INT - Minimum days in advance
+   - maxAdvanceBookingDays: INT - Maximum days in advance
+   - cancellationPolicyHours: INT - Hours before free cancellation
+   - depositPercentage: DECIMAL(5,2) - Required deposit percentage
+   - checkInTime: TIME - Check-in time
+   - checkOutTime: TIME - Check-out time
+   - updatedAt: TIMESTAMP
+
+8. ROOM IMAGES TABLE
+   - Purpose: Stores room images
+   - Primary Key: id (VARCHAR(36))
+   Fields:
+   - roomId: VARCHAR(36) - Reference to rooms
+   - imageUrl: VARCHAR(255) - Image URL
+   - isPrimary: BOOLEAN - Primary image flag
+   - createdAt: TIMESTAMP
+
+Key Relationships
+----------------
+1. Users -> Bookings (One-to-Many)
+2. Rooms -> Bookings (One-to-Many)
+3. Bookings -> Payments (One-to-Many)
+4. Users -> Notifications (One-to-Many)
+5. Rooms -> Room Images (One-to-Many)
+
+Important Indexes
+----------------
+1. idx_users_email - Fast user lookup by email
+2. idx_bookings_user - Fast booking lookup by user
+3. idx_bookings_room - Fast booking lookup by room
+4. idx_bookings_dates - Optimize date-based queries
+5. idx_payments_booking - Fast payment lookup by booking
+6. idx_notifications_user - Fast notification lookup by user
+7. idx_notifications_unread - Optimize unread notifications query
+
+
+
+Security Considerations
+---------------------
+1. Always use prepared statements
+2. Hash passwords before storing
+3. Implement proper role-based access
+4. Use SSL/TLS for database connections
+5. Regular backups
+6. Implement rate limiting

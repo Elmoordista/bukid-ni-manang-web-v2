@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Bukid ni Manang Farm And Resort - Web-based Booking System with Virtual Tour</title>
+    <meta name="description" content="Official booking system and virtual tour for Bukid ni Manang Farm And Resort" />
+    <meta name="author" content="Bukid ni Manang" />
+    <meta property="og:image" content="/og-image.png" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Ensure React app mounts properly
+      window.addEventListener('load', function() {
+        if (!document.getElementById('root').hasChildNodes()) {
+          console.log('Attempting to remount React app...');
+          import('/src/main.tsx')
+            .catch(console.error);
+        }
+      });
+    </script>
+  </body>
+</html>

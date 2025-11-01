@@ -1,0 +1,494 @@
+FUNCTIONAL AND DATA FLOW DIAGRAMS
+=================================
+
+1. FUNCTIONAL DECOMPOSITION DIAGRAM (FDD)
+---------------------------------------
+```
+Bukid ni Manang Resort Management System
+├─── User Management
+│    ├─── Authentication
+│    │    ├─── Login
+│    │    ├─── Registration
+│    │    └─── Password Recovery
+│    │
+│    ├─── Profile Management
+│    │    ├─── View Profile
+│    │    ├─── Update Profile
+│    │    └─── Manage Preferences
+│    │
+│    └─── Role Management
+│         ├─── Admin Access
+│         └─── Guest Access
+│
+├─── Room Management
+│    ├─── Room Inventory
+│    │    ├─── Add Room
+│    │    ├─── Update Room
+│    │    ├─── Delete Room
+│    │    └─── View Rooms
+│    │
+│    ├─── Room Status
+│    │    ├─── Check Availability
+│    │    ├─── Update Status
+│    │    └─── Maintenance Schedule
+│    │
+│    └─── Room Pricing
+│         ├─── Set Base Price
+│         ├─── Seasonal Rates
+│         └─── Special Offers
+│
+├─── Booking Management
+│    ├─── Reservation Process
+│    │    ├─── Check Availability
+│    │    ├─── Create Booking
+│    │    └─── Modify Booking
+│    │
+│    ├─── Payment Processing
+│    │    ├─── Process Payment
+│    │    ├─── Generate Receipt
+│    │    └─── Refund Management
+│    │
+│    └─── Booking Administration
+│         ├─── View Bookings
+│         ├─── Cancel Bookings
+│         └─── Generate Reports
+│
+└─── Virtual Tour
+     ├─── Tour Navigation
+     │    ├─── View Rooms
+     │    ├─── View Amenities
+     │    └─── View Facilities
+     │
+     └─── Media Management
+          ├─── Upload Media
+          ├─── Update Content
+          └─── Manage Gallery
+```
+
+2. DATA FLOW DIAGRAMS (DFD)
+--------------------------
+
+2.1 Context Level (Level 0) DFD
+```
+                 ┌─────────────┐
+  Guest ────────►│             │◄──────── Admin
+   Registration  │             │  System
+   Login         │   Bukid     │  Configuration
+   View Rooms    │    ni       │
+   Make Booking  │  Manang     │
+                 │  System     │
+   Payment ─────►│             │◄──────── Room Updates
+   Information   │             │
+                 └─────────────┘
+                      │  ▲
+                      │  │
+                      ▼  │
+                 Database
+```
+
+2.2 Level 1 DFD
+```
+                                      Admin
+                                        │
+                                        ▼
+ Guest      ┌─────────────┐      ┌─────────────┐
+  │         │   User      │      │   Admin     │
+  ├────────►│  Management │      │  Dashboard  │
+  │         └─────────────┘      └─────────────┘
+  │              │                     │
+  │              ▼                     ▼
+  │         ┌─────────────┐      ┌─────────────┐
+  │         │             │      │   Room      │
+  ├────────►│  Booking    │◄────►│ Management  │
+  │         │   System    │      │             │
+  │         └─────────────┘      └─────────────┘
+  │              │                     │
+  │              ▼                     ▼
+  │         ┌─────────────┐      ┌─────────────┐
+  └────────►│  Payment    │      │  Reports &  │
+            │  Processing │      │  Analytics  │
+            └─────────────┘      └─────────────┘
+                   │                   │
+                   │                   │
+                   ▼                   ▼
+              ┌─────────────────────────┐
+              │        Database         │
+              └─────────────────────────┘
+```
+
+3. DETAILED CONTEXT AND PROCESS DIAGRAMS
+---------------------------------------
+
+3.1 CONTEXT DIAGRAM (Level 0)
+----------------------------
+```
+                                  ┌───────────────────┐
+           Room Details          │    Resort         │    Booking Confirmations
+           Availability    ┌────►│    Staff          │◄───┐
+           Updates        │     └───────────────────┘     │
+                         │                                │
+┌──────────────┐    ┌───┴──────────────────┐     ┌──────┴───────┐
+│              │    │                       │     │              │
+│   Admin      ├───►│      Bukid ni        │◄────┤    Guest     │
+│              │    │      Manang          │     │              │
+└──────────────┘    │      Resort          │     └──────────────┘
+    │               │    Management        │            ▲
+    │               │      System          │            │
+    │               │                       │            │
+    │               └───────────┬───────────┘            │
+    │                           │                        │
+    │                    ┌──────┴──────┐                │
+    │                    │             │                │
+    └──────────────────►│   Payment   │◄───────────────┘
+   Financial Reports     │   System    │    Payment Info
+   System Config        └─────────────┘     Booking Requests
+
+External Entities:
+1. Admin
+   - Manages system configuration
+   - Updates room information
+   - Handles staff accounts
+   - Views reports and analytics
+   - Manages bookings
+
+2. Guest
+   - Views room availability
+   - Makes reservations
+   - Processes payments
+   - Views virtual tour
+   - Manages personal bookings
+
+3. Resort Staff
+   - Updates room status
+   - Processes check-in/out
+   - Handles maintenance requests
+   - Manages guest services
+
+4. Payment System
+   - Processes transactions
+   - Handles refunds
+   - Generates receipts
+   - Manages payment status
+
+Data Flows:
+1. Admin → System
+   - Room updates
+   - Price configurations
+   - Staff management
+   - System settings
+
+3.2 DETAILED PROCESS DIAGRAMS (Level 1)
+-------------------------------------
+
+A. USER MANAGEMENT PROCESS
+```
+                                      ┌─────────────────┐
+ Registration Data                    │  User Database  │
+        │                            └────────┬────────┘
+        ▼                                     │
+┌───────────────┐                            │
+│  1.0          │         User Data          │
+│  User         │◄───────────────────────────┘
+│  Registration │
+└───────┬───────┘
+        │
+        ▼                            ┌────────────────┐
+┌───────────────┐      Credentials  │                │
+│  2.0          │─────────────────►│    Security    │
+│  User         │                   │    System      │
+│  Authentication│◄─────────────────│                │
+└───────┬───────┘    Auth Token     └────────────────┘
+        │
+        ▼
+┌───────────────┐
+│  3.0          │
+│  Profile      │
+│  Management   │
+└───────────────┘
+```
+
+B. BOOKING MANAGEMENT PROCESS
+```
+┌───────────────┐
+│  Room         │──────┐
+│  Database     │      │
+└───────────────┘      │    ┌─────────────────┐
+                       │    │    Booking      │
+┌───────────────┐      ├───►│    Database     │
+│  1.0          │      │    └─────────────────┘
+│  Room         │      │            │
+│  Availability │      │            │
+└───────┬───────┘      │            │
+        │              │            │
+        ▼              │            ▼
+┌───────────────┐      │    ┌─────────────────┐
+│  2.0          │      │    │     3.0         │
+│  Booking      │──────┘    │    Payment      │
+│  Creation     │───────────►    Processing   │
+└───────────────┘           └─────────────────┘
+```
+
+C. PAYMENT PROCESSING DETAIL
+```
+┌───────────────┐         ┌─────────────────┐
+│  Booking      │────────►│    Payment      │
+│  Database     │         │    Gateway      │
+└───────────────┘         └────────┬────────┘
+                                   │
+                                   ▼
+┌───────────────┐         ┌─────────────────┐
+│  Payment      │◄────────│  Transaction    │
+│  Database     │         │  Processing     │
+└───────┬───────┘         └────────┬────────┘
+        │                          │
+        ▼                          ▼
+┌───────────────┐         ┌─────────────────┐
+│  Receipt      │         │    Financial    │
+│  Generation   │         │    Reports      │
+└───────────────┘         └─────────────────┘
+```
+
+D. VIRTUAL TOUR PROCESS
+```
+┌───────────────┐         ┌─────────────────┐
+│  Media        │────────►│   Content       │
+│  Storage      │         │   Loading       │
+└───────────────┘         └────────┬────────┘
+                                   │
+                                   ▼
+┌───────────────┐         ┌─────────────────┐
+│  User         │◄────────│    Tour         │
+│  Interface    │         │    Navigation   │
+└───────┬───────┘         └────────┬────────┘
+        │                          │
+        ▼                          ▼
+┌───────────────┐         ┌─────────────────┐
+│  Interactive  │         │    Usage        │
+│  Features     │         │    Analytics    │
+└───────────────┘         └─────────────────┘
+```
+
+E. ADMIN DASHBOARD PROCESS
+```
+┌───────────────┐         ┌─────────────────┐
+│  Booking      │────────►│    Reports      │
+│  Data         │         │    Generation   │
+└───────────────┘         └────────┬────────┘
+                                   │
+┌───────────────┐                 ▼
+│  Room         │         ┌─────────────────┐
+│  Management   │◄────────│    Admin        │
+└───────────────┘         │    Dashboard    │
+                         └────────┬────────┘
+┌───────────────┐                │
+│  User         │                ▼
+│  Management   │◄───────┌─────────────────┐
+└───────────────┘        │    System       │
+                        │    Settings     │
+                         └─────────────────┘
+```
+
+Process Details:
+
+1. User Management:
+   a) Registration Validation
+      - Email format verification
+      - Password strength check (min 8 chars, special chars, numbers)
+      - Duplicate email check
+      - Phone number validation
+      - Required fields validation
+
+   b) Authentication Processing
+      - JWT token generation
+      - Session timeout (2 hours)
+      - Failed login attempt tracking (max 3 attempts)
+      - Password hashing (bcrypt)
+      - 2FA option for admin users
+
+   c) Profile Management
+      - Profile photo upload (max 5MB)
+      - Contact information updates
+      - Preferences settings
+      - Booking history access
+      - Password change workflow
+
+2. Booking Management:
+   a) Availability Check
+      - Real-time room status
+      - Date range validation
+      - Capacity verification
+      - Price calculation
+      - Special dates/holiday checking
+
+   b) Reservation Process
+      - Guest information collection
+      - Room type selection
+      - Duration calculation
+      - Special requests handling
+      - Automatic inventory update
+
+   c) Booking Modification
+      - Date change handling
+      - Room upgrade/downgrade
+      - Cancellation processing
+      - Refund calculation
+      - Notification system
+
+3. Payment Processing:
+   a) Transaction Handling
+      - Multiple payment method support
+      - Currency conversion
+      - Tax calculation
+      - Deposit handling
+      - Payment splitting
+
+   b) Security Measures
+      - SSL encryption
+      - Payment gateway integration
+      - Fraud detection
+      - Data encryption
+      - PCI compliance
+
+   c) Financial Records
+      - Invoice generation
+      - Receipt numbering
+      - Tax reporting
+      - Revenue tracking
+      - Refund processing
+
+4. Virtual Tour:
+   a) Media Management
+      - 360° image optimization
+      - Video streaming quality control
+      - Cache management
+      - Progressive loading
+      - Bandwidth optimization
+
+   b) User Interface
+      - Touch/mouse controls
+      - Hotspot interaction
+      - Room information overlay
+      - Navigation arrows
+      - Mini-map display
+
+   c) Analytics
+      - View duration tracking
+      - Popular viewpoints
+      - User interaction patterns
+      - Device compatibility
+      - Performance metrics
+
+5. Admin Dashboard:
+   a) Reporting System
+      - Daily revenue reports
+      - Occupancy statistics
+      - Customer demographics
+      - Booking trends
+      - Cancellation analysis
+
+   b) Staff Management
+      - Role assignment
+      - Access control
+      - Activity logging
+      - Performance tracking
+      - Schedule management
+
+   c) System Settings
+      - Price management
+      - Room configuration
+      - Email templates
+      - Notification settings
+      - Backup scheduling
+
+6. Error Handling:
+   a) User Errors
+      - Form validation feedback
+      - Booking conflicts resolution
+      - Payment retry logic
+      - Session recovery
+      - Data validation errors
+
+   b) System Errors
+      - Database connection issues
+      - Payment gateway failures
+      - Media loading errors
+      - Network timeout handling
+      - Service unavailability
+
+7. Security Measures:
+   a) Data Protection
+      - HTTPS enforcement
+      - Data encryption at rest
+      - Regular security audits
+      - Access log monitoring
+      - Backup encryption
+
+   b) Access Control
+      - Role-based permissions
+      - IP whitelisting for admin
+      - Session management
+      - API rate limiting
+      - Audit trail logging
+
+2. System → Admin
+   - Booking reports
+   - Financial reports
+   - Occupancy statistics
+   - System status
+
+3. Guest → System
+   - Registration info
+   - Booking requests
+   - Payment details
+   - Tour navigation
+
+4. System → Guest
+   - Room availability
+   - Booking confirmations
+   - Payment receipts
+   - Virtual tour content
+
+5. Staff → System
+   - Room status updates
+   - Check-in/out records
+   - Maintenance reports
+   - Service requests
+
+6. System → Staff
+   - Daily bookings
+   - Guest information
+   - Task assignments
+   - Service requests
+
+7. Payment System Integration
+   - Payment processing
+   - Transaction records
+   - Refund processing
+   - Financial tracking```
+```
+
+Key Features Highlighted in Diagrams:
+
+1. FDD Shows:
+- Complete system functionality breakdown
+- Hierarchical structure of features
+- Module relationships
+- System capabilities at each level
+
+2. DFD Shows:
+- Data flow between system components
+- External entities interaction
+- Process relationships
+- Data storage points
+
+3. Class Diagram Shows:
+- Object relationships
+- Methods and attributes
+- Inheritance structures
+- System architecture
+
+The diagrams can be converted to professional UML using:
+- Draw.io
+- Lucidchart
+- Visual Paradigm
+- Enterprise Architect

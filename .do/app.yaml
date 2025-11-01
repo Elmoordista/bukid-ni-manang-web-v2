@@ -1,0 +1,41 @@
+# DigitalOcean App Platform Configuration
+name: bukid-ni-manang
+region: sgp1  # Singapore region for better latency in Philippines
+services:
+  - name: web
+    github:
+      repo: Elmoordista/bukid-ni-manang
+      branch: main
+    build_command: cd client && npm install && npm run build
+    run_command: cd client && npm start
+    environment_slug: node-js
+    instance_size_slug: basic-xs  # 1 GB RAM, 1 vCPU
+    instance_count: 1
+    http_port: 5177
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_URL
+        value: ${_self.PUBLIC_URL}/api
+      # Database configuration
+      - key: DATABASE_URL
+        value: ${db.DATABASE_URL}  # This will be automatically set
+      - key: JWT_SECRET
+        value: ${secrets.JWT_SECRET}  # Set this in DigitalOcean dashboard
+    routes:
+      - path: /
+      - path: /api
+    health_check:
+      http_path: /health
+      period_seconds: 10
+      timeout_seconds: 5
+
+databases:
+  - name: bukid-ni-manang-db
+    engine: mysql
+    version: "8"
+    size: db-s-1vcpu-1gb  # 1 GB RAM, 1 vCPU
+    num_nodes: 1
+    region: sgp1
+    db_name: bukid_ni_manang_prod
+    db_user: doadmin

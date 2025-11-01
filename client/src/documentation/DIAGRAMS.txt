@@ -1,0 +1,232 @@
+SYSTEM DIAGRAMS DOCUMENTATION
+===========================
+
+1. SYSTEM ARCHITECTURE DIAGRAMS
+------------------------------
+
+1.1 High-Level System Architecture
+```
+┌─────────────────────────────────────────────────────┐
+│                  Client Layer                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │   React UI  │  │Virtual Tour │  │   Admin UI  │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘ │
+└───────────────────────┬─────────────────────────────┘
+                        │
+┌───────────────────────┼─────────────────────────────┐
+│                  API Layer                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │ Auth API    │  │Booking API  │  │Payment API  │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘ │
+└───────────────────────┬─────────────────────────────┘
+                        │
+┌───────────────────────┼─────────────────────────────┐
+│               Service Layer                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │User Service │  │Room Service │  │Payment Svc  │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘ │
+└───────────────────────┬─────────────────────────────┘
+                        │
+┌───────────────────────┼─────────────────────────────┐
+│               Data Layer                            │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │   MySQL DB  │  │File Storage │  │   Cache     │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘ │
+└─────────────────────────────────────────────────────┘
+```
+
+2. DATABASE SCHEMA DIAGRAM
+------------------------
+```
+┌──────────────┐     ┌───────────────┐     ┌────────────────┐
+│    Users     │     │    Bookings   │     │    Payments    │
+├──────────────┤     ├───────────────┤     ├────────────────┤
+│ id (PK)      │     │ id (PK)       │     │ id (PK)        │
+│ email        │ 1:N │ userId (FK)   │ 1:N │ bookingId (FK) │
+│ firstName    ├────►│ roomId (FK)   ├────►│ amount         │
+│ lastName     │     │ checkInDate   │     │ paymentMethod  │
+│ role         │     │ checkOutDate  │     │ status         │
+│ password     │     │ totalAmount   │     │ paymentDate    │
+└──────────────┘     └───────────────┘     └────────────────┘
+       ▲                     ▲
+       │                     │
+       │                     │
+┌──────────────┐     ┌───────────────┐     ┌────────────────┐
+│Notifications │     │    Rooms      │     │ VenueSettings  │
+├──────────────┤     ├───────────────┤     ├────────────────┤
+│ id (PK)      │     │ id (PK)       │     │ id (PK)        │
+│ userId (FK)   │     │ name          │     │ venueName      │
+│ title        │     │ type          │     │ address        │
+│ message      │     │ capacity      │     │ contactEmail   │
+│ isRead       │     │ basePrice     │     │ policies       │
+└──────────────┘     └───────────────┘     └────────────────┘
+```
+
+3. USE CASE DIAGRAM
+-----------------
+```
+                        Bukid ni Manang System
+┌────────────────────────────────────────────────────────┐
+│                                                        │
+│  ┌──────────┐         ┌─────────────┐                 │
+│  │          │         │   View      │                 │
+│  │  Browse  ├────────►│   Rooms     │                 │
+│  │  Rooms   │         └─────────────┘                 │
+│  │          │         ┌─────────────┐                 │
+│  └──────────┘         │   Make      │                 │
+│       ▲              ┌┤  Booking    │                 │
+│       │              ││             │                 │
+│    Guest             └┤  Payment    │                 │
+│       │               └─────────────┘                 │
+│       ▼                                              │
+│  ┌──────────┐         ┌─────────────┐                 │
+│  │  View    │         │   View      │                 │
+│  │ Virtual  ├────────►│   Tour      │                 │
+│  │  Tour    │         └─────────────┘                 │
+│  └──────────┘                                         │
+│                                                        │
+│  ┌──────────┐         ┌─────────────┐                 │
+│  │          │         │  Manage     │                 │
+│  │  Admin   ├────────►│   Rooms     │                 │
+│  │  Tasks   │         └─────────────┘                 │
+│  │          │         ┌─────────────┐                 │
+│  └──────────┘         │  Manage     │                 │
+│       ▲              ┌┤  Bookings   │                 │
+│       │              ││             │                 │
+│    Admin             └┤  Settings   │                 │
+│                       └─────────────┘                 │
+└────────────────────────────────────────────────────────┘
+```
+
+4. SEQUENCE DIAGRAM - Booking Process
+----------------------------------
+```
+User        Frontend        API         Database        Payment
+  │            │            │              │              │
+  │ Browse     │            │              │              │
+  ├─────────► │            │              │              │
+  │            │            │              │              │
+  │            │ Check      │              │              │
+  │            │ Available  │              │              │
+  │            ├─────────► │              │              │
+  │            │            │ Query        │              │
+  │            │            ├─────────────►│              │
+  │            │            │              │              │
+  │            │            │ Response     │              │
+  │            │            │◄────────────┤              │
+  │            │            │              │              │
+  │            │ Display    │              │              │
+  │            │ Results    │              │              │
+  │◄──────────┤            │              │              │
+  │            │            │              │              │
+  │ Select     │            │              │              │
+  │ Room       │            │              │              │
+  ├─────────► │            │              │              │
+  │            │            │              │              │
+  │            │ Create     │              │              │
+  │            │ Booking    │              │              │
+  │            ├─────────► │              │              │
+  │            │            │ Save         │              │
+  │            │            ├─────────────►│              │
+  │            │            │              │              │
+  │            │            │ Confirm      │              │
+  │            │            │◄────────────┤              │
+  │            │            │              │              │
+  │            │ Process    │              │              │
+  │            │ Payment    │              │              │
+  │            ├───────────────────────────────────────► │
+  │            │            │              │              │
+  │            │            │              │              │
+  │            │ Confirm    │              │              │
+  │            │ Payment    │              │              │
+  │◄──────────┤            │              │              │
+  │            │            │              │              │
+```
+
+5. COMPONENT DIAGRAM
+------------------
+```
+┌─────────────────────────────────────────────────────┐
+│                  React Components                    │
+├─────────────┬─────────────┬─────────────┬──────────┤
+│ Auth        │ Booking     │ Admin       │ Virtual  │
+│ Components  │ Components  │ Components  │ Tour     │
+├─────────────┼─────────────┼─────────────┼──────────┤
+│ Login       │ RoomList    │ Dashboard   │ Tour     │
+│ Register    │ Calendar    │ UserMgmt    │ Viewer   │
+│ Profile     │ Payment     │ RoomMgmt    │ Controls │
+└─────────────┴─────────────┴─────────────┴──────────┘
+           │            │            │           │
+           ▼            ▼            ▼           ▼
+┌─────────────────────────────────────────────────────┐
+│                  Shared Components                   │
+├─────────────┬─────────────┬─────────────┬──────────┤
+│ UI          │ Forms       │ Layout      │ Utils    │
+│ Components  │ Components  │ Components  │          │
+└─────────────┴─────────────┴─────────────┴──────────┘
+```
+
+6. DEPLOYMENT DIAGRAM
+-------------------
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│ Web Browser │     │   CDN       │     │   Cloud     │
+│ (Client)    │◄───►│ (Assets)    │     │  Storage    │
+└─────────────┘     └─────────────┘     └─────────────┘
+       ▲                                       ▲
+       │                                       │
+       ▼                                       │
+┌─────────────┐     ┌─────────────┐          │
+│ Web Server  │     │ Application │          │
+│ (Nginx)     │◄───►│   Server    │──────────┘
+└─────────────┘     └─────────────┘
+                           ▲
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │  Database   │
+                    │  (MySQL)    │
+                    └─────────────┘
+```
+
+7. STATE DIAGRAM - Booking Process
+-------------------------------
+```
+┌──────────┐
+│  Start   │
+└────┬─────┘
+     ▼
+┌──────────┐    ┌──────────┐    ┌──────────┐
+│ Select   │    │ Enter    │    │ Review   │
+│ Room     ├───►│ Dates    ├───►│ Details  │
+└────┬─────┘    └────┬─────┘    └────┬─────┘
+     │               │                │
+     │               │                │
+     ▼               ▼                ▼
+┌──────────┐    ┌──────────┐    ┌──────────┐
+│ Payment  │◄───┤ Confirm  │◄───┤ Process  │
+│ Complete │    │ Payment  │    │ Payment  │
+└────┬─────┘    └────┬─────┘    └────┬─────┘
+     │               │                │
+     ▼               ▼                ▼
+┌──────────┐
+│   End    │
+└──────────┘
+```
+
+These diagrams provide a comprehensive visual representation of:
+1. System architecture and layers
+2. Database relationships and structure
+3. User interactions and use cases
+4. Process flows and sequences
+5. Component organization
+6. Deployment architecture
+7. State transitions
+
+The diagrams use ASCII art for compatibility and can be easily converted to proper UML diagrams using tools like:
+- Draw.io
+- Lucidchart
+- PlantUML
+- Mermaid
+
+Would you like any specific diagram to be expanded or modified?
