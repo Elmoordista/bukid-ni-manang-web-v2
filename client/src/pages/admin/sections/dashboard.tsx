@@ -8,11 +8,23 @@ import { RESORT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+import axios from "@/../axios/axiosInstance.js";
+import Notiflix from "notiflix";
+import { useToast } from "@/hooks/use-toast";
+
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+  const [bookings, setBookings] = useState([]);
+  const [pendingBookings, setPendingBookings] = useState([])
+  const [confirmedBookings, setConfirmedBookings] = useState([])
+  const [available_room, setAvailableRoom] = useState([])
+  const [all_rooms_counts, setAllRoomsCounts] = useState(0)
+  const [todayBookings, setTodayBookings] = useState<Booking[]>([]);
+
+  
   const [roomAvailability, setRoomAvailability] = useState({
     kubo: { total: 5, available: 3, rate: "₱2,500" },
     gazebo: { total: 3, available: 1, rate: "₱3,500" },
@@ -22,33 +34,34 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     // Simulate API calls
-    const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Your actual API calls would go here
-        // setBookings(await fetchBookings());
-        // setRoomAvailability(await fetchRoomAvailability());
-        
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-        setIsLoading(false);
-      }
-    };
-
     fetchDashboardData();
   }, []);
+  const fetchDashboardData = async (page = 1) => {
+    Notiflix.Loading.standard('Loading dashboard data...');
+    try {
+      const res = await axios.get(`/dashboard`);
+      if(res.data){
+        setPendingBookings(res.data.todays_booking_pending);
+        setTodayBookings(res.data.todays_booking_confirmed);
+        setAllRoomsCounts(res.data.all_rooms);
+        setAvailableRoom(res.data.rooms_available);
+        setBookings(res.data.bookings);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setIsLoading(false);
+      Notiflix.Loading.remove();
+    }
+  };
   
   // Calculate various booking statistics
-  const pendingBookings = bookings.filter(b => b.status === "pending" || !b.status);
-  const confirmedBookings = bookings.filter(b => b.status === "confirmed");
-  const todayBookings = bookings.filter(b => {
-    const bookingDate = new Date(b.checkInDate);
-    return bookingDate.toDateString() === currentDate.toDateString();
-  });
+  // const pendingBookings = bookings.filter(b => b.status === "pending" || !b.status);
+  // const confirmedBookings = bookings.filter(b => b.status === "confirmed");
+  // const todayBookings = bookings.filter(b => {
+  //   const bookingDate = new Date(b.checkInDate);
+  //   return bookingDate.toDateString() === currentDate.toDateString();
+  // });
   
   // Calculate revenue metrics
   const totalRevenue = confirmedBookings.reduce((sum, booking) => 
@@ -61,6 +74,26 @@ export default function AdminDashboard() {
     }
     return sum;
   }, 0);
+
+  const handleUpdateBookingStatus = async (bookingId: number, newStatus: string) => {
+    Notiflix.Loading.standard('Updating booking status...');
+    try {
+      await axios.patch(`/booking/${bookingId}`, { status: newStatus });
+      // Update local state
+      const updatedBookings = bookings.map(b => 
+        b.id === bookingId ? { ...b, status: newStatus } : b
+      );
+      setBookings(updatedBookings);
+      toast({
+        title: "Success",
+        description: "Booking status updated successfully.",
+      });
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+    } finally {
+      Notiflix.Loading.remove();
+    }
+  };
 
   return (
     <div className="space-y-8 p-8">
@@ -86,9 +119,7 @@ export default function AdminDashboard() {
             <div className="text-2xl font-bold">{todayBookings.length}</div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>Confirmed Reservations</span>
-              {pendingBookings.length > 0 && (
-                <span className="text-primary font-medium">+{pendingBookings.length} pending</span>
-              )}
+              <span className="text-primary font-medium">+{pendingBookings.length} pending</span>
             </div>
           </CardContent>
         </Card>
@@ -103,10 +134,10 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Object.values(roomAvailability).reduce((acc, curr) => acc + curr.available, 0)} Available
+              {available_room.length} Available
             </div>
             <div className="text-sm text-muted-foreground">
-              Out of {Object.values(roomAvailability).reduce((acc, curr) => acc + curr.total, 0)} Total Venues
+              Out of {all_rooms_counts} Total Venues
             </div>
           </CardContent>
         </Card>
@@ -125,7 +156,7 @@ export default function AdminDashboard() {
             </div>
             <div className="text-sm text-muted-foreground">
               Total Amount: ₱{(pendingBookings.reduce((sum, booking) => 
-                sum + (parseFloat(booking.totalAmount?.toString() || "0")), 0
+                sum + (parseFloat(booking.total_price?.toString() || "0")), 0
               )).toLocaleString()}
             </div>
           </CardContent>
@@ -154,9 +185,9 @@ export default function AdminDashboard() {
                     <Calendar className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">{booking.guestName}</p>
+                    <p className="text-sm font-medium">{booking.user.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(booking.checkInDate).toLocaleDateString()} - {new Date(booking.checkOutDate).toLocaleDateString()}
+                      {new Date(booking.start_date).toLocaleDateString()} - {new Date(booking.end_date).toLocaleDateString()}
                     </p>
                   </div>
                   <Button 
@@ -166,12 +197,14 @@ export default function AdminDashboard() {
                     onClick={(e) => {
                       e.stopPropagation();
                       // Update booking status
-                      const updatedBookings = bookings.map(b => 
-                        b.id === booking.id 
-                          ? { ...b, status: b.status === 'confirmed' ? 'pending' : 'confirmed' }
-                          : b
-                      );
-                      setBookings(updatedBookings);
+                      // const updatedBookings = bookings.map(b => 
+                      //   b.id === booking.id 
+                      //     ? { ...b, status: b.status === 'confirmed' ? 'pending' : 'confirmed' }
+                      //     : b
+                      // );
+
+                      handleUpdateBookingStatus(booking.id, booking.status === 'confirmed' ? 'pending' : 'confirmed');
+                      
                     }}
                   >
                     {booking.status}
@@ -196,7 +229,8 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {Object.entries(roomAvailability).map(([type, data]) => (
+                {available_room.map((type, data) => (
+                // {Object.entries(roomAvailability).map(([type, data]) => (
                   <div 
                     key={type} 
                     className="p-4 rounded-lg border border-border hover:bg-accent/50 cursor-pointer"
@@ -204,27 +238,29 @@ export default function AdminDashboard() {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium capitalize">
-                        {type.replace('_', ' ')}
+                        {type.name}
+                        {/* {type.replace('_', ' ')} */}
                       </span>
                       <span className={`text-sm px-2 py-1 rounded-full ${
                         data.available === 0 ? 'bg-red-100 text-red-600' : 
                         data.available < data.total / 2 ? 'bg-yellow-100 text-yellow-600' : 
                         'bg-green-100 text-green-600'
                       }`}>
-                        {data.available} Available
+                        Available
+                        {/* {data.available} Available */}
                       </span>
                     </div>
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Rate per day</span>
-                        <span className="font-medium text-foreground">{data.rate}</span>
+                        <span className="font-medium text-foreground">₱{type.price_per_night.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Total capacity</span>
-                        <span className="font-medium text-foreground">{data.total} units</span>
+                        <span className="font-medium text-foreground">{type.max_occupancy} units</span>
                       </div>
                     </div>
-                    <div className="mt-3 h-2 bg-secondary rounded-full overflow-hidden">
+                    {/* <div className="mt-3 h-2 bg-secondary rounded-full overflow-hidden">
                       <div 
                         className={`h-full transition-all ${
                           data.available === 0 ? 'bg-red-500' : 
@@ -233,7 +269,7 @@ export default function AdminDashboard() {
                         }`}
                         style={{ width: `${((data.total - data.available) / data.total) * 100}%` }}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 ))}
                 <div className="flex justify-end space-x-2 mt-4">
