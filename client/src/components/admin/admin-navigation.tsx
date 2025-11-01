@@ -35,10 +35,6 @@ export default function AdminNavigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   const [unreadNotifications, setUnreadNotifications] = useState(3);
   const [pendingBookings, setPendingBookings] = useState(3);
