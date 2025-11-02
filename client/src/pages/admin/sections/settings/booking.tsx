@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -83,6 +83,33 @@ export default function BookingSettings() {
       },
     },
   });
+
+  useEffect(() => {
+      fetchSettings();
+  }, []);
+
+  const fetchSettings = async () =>{
+    Notiflix.Loading.circle('Loading settings...');
+    try {
+      // Replace with actual API call
+      const response = await HttpClient.get('/settings?type=booking');
+      if(response.data?.data){
+        const fetchedSettings = response.data.data;
+        const setting = fetchedSettings? JSON.parse(fetchedSettings.settings) : null;
+        if(setting){
+          setSettings(setting);
+        }
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was an error saving your settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      Notiflix.Loading.remove();
+    }
+  }
 
   const handleSave = async () => {
     Notiflix.Loading.circle('Saving settings...');

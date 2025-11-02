@@ -16,6 +16,7 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import Notiflix from "notiflix";
 import HttpClient from "@/lib/axiosInstance.ts";
+import { useEffect } from "react";
 
 const venueSettingsSchema = z.object({
   venueName: z.string().min(1, "Venue name is required"),
@@ -47,6 +48,33 @@ export default function VenueSettings() {
       policies: "1. No smoking inside rooms\n2. Quiet hours from 10 PM to 6 AM\n3. No pets allowed\n4. Maximum occupancy must be strictly followed",
     },
   });
+
+   useEffect(() => {
+      fetchSettings();
+  }, []);
+
+  const fetchSettings = async () =>{
+    Notiflix.Loading.circle('Loading settings...');
+    try {
+      // Replace with actual API call
+      const response = await HttpClient.get('/settings?type=venue');
+      if(response.data?.data){
+        const fetchedSettings = response.data.data;
+        const setting = fetchedSettings? JSON.parse(fetchedSettings.settings) : null;
+        if(setting){
+          form.reset(setting);
+        }
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was an error saving your settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      Notiflix.Loading.remove();
+    }
+  }
 
   const onSubmit = async (data: VenueSettingsData) => {
     Notiflix.Loading.circle('Saving settings...');
