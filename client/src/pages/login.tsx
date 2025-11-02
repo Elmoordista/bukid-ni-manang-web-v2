@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 import { Leaf, LogIn, Eye, EyeOff } from "lucide-react";
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -40,7 +40,7 @@ export default function Login() {
     setIsSubmitting(true);
 
     try {
-     const response = await axios.post('/auth/login',data); 
+     const response = await HttpClient.post('/auth/login',data); 
       // store data in auth context
       if(response.data?.user){
         auth?.handleSetUser(response.data.user);

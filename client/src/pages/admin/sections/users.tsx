@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -78,7 +78,7 @@ export default function UserManagement() {
   const fetchUsers = async (current_page = currentPage, page_size = pageSize, search = searchQuery) => {
     setLoading(true);
     try {
-      const response = await axios.get(`/user/get-users`, {
+      const response = await HttpClient.get(`/user/get-users`, {
         params: {
           page: current_page,
           pageSize: page_size,
@@ -112,7 +112,7 @@ export default function UserManagement() {
     }
 
     try {
-      const { data } = await axios.post(`/user`, {
+      const { data } = await HttpClient.post(`/user`, {
         ...newUser,
         account_type: newUser.role,
       });
@@ -133,7 +133,7 @@ export default function UserManagement() {
     const confirmed = window.confirm("Are you sure you want to update this user's status?");
     if (!confirmed) return;
     try {
-      await axios.patch(`/user/${userId}`, { status: newStatus });
+      await HttpClient.patch(`/user/${userId}`, { status: newStatus });
       toast({ title: "Status Updated", description: "User status updated." });
       fetchUsers();
     } catch {
@@ -150,7 +150,7 @@ export default function UserManagement() {
     if (!confirmed) return;
 
     try {
-      await axios.patch(`/user/${userId}`, { account_type: newRole });
+      await HttpClient.patch(`/user/${userId}`, { account_type: newRole });
       toast({ title: "Role Updated", description: "User role updated." });
       fetchUsers();
     } catch {

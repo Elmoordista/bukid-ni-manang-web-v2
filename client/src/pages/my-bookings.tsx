@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { useNotifications } from "@/hooks/use-notifications";
 
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 import CustomerBookingCard from "@/components/customer-booking-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,7 +38,7 @@ export default function MyBookings() {
       setIsLoading(true);
 
     try {
-      const res = await axios.get(`/front-end/get-my-bookings`);
+      const res = await HttpClient.get(`/front-end/get-my-bookings`);
       if(res.data){
         setBookings(res.data.data);
       }

@@ -10,7 +10,7 @@ import type { Booking } from "@/lib/types";
 import GCashPaymentForm from "./gcash-payment-form";
 import PaymentStatusDisplay from "./payment-status-display";
 
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 interface CustomerBookingCardProps {
   booking: Booking;
@@ -57,7 +57,7 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
    const handleCancelBooking = async () => {
     setIsProcessing(true);
     try {
-      const res = await axios.post(`/front-end/cancel-booking`, { booking_id: booking.id });
+      const res = await HttpClient.post(`/front-end/cancel-booking`, { booking_id: booking.id });
       if(res.data){
        toast({
           title: "Booking Cancelled",

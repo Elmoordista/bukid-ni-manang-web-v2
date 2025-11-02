@@ -8,7 +8,7 @@ import { RESORT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 import Notiflix from "notiflix";
 import { useToast } from "@/hooks/use-toast";
 
@@ -39,7 +39,7 @@ export default function AdminDashboard() {
   const fetchDashboardData = async (page = 1) => {
     Notiflix.Loading.standard('Loading dashboard data...');
     try {
-      const res = await axios.get(`/dashboard`);
+      const res = await HttpClient.get(`/dashboard`);
       if(res.data){
         setPendingBookings(res.data.todays_booking_pending);
         setTodayBookings(res.data.todays_booking_confirmed);
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
   const handleUpdateBookingStatus = async (bookingId: number, newStatus: string) => {
     Notiflix.Loading.standard('Updating booking status...');
     try {
-      await axios.patch(`/booking/${bookingId}`, { status: newStatus });
+      await HttpClient.patch(`/booking/${bookingId}`, { status: newStatus });
       // Update local state
       const updatedBookings = bookings.map(b => 
         b.id === bookingId ? { ...b, status: newStatus } : b

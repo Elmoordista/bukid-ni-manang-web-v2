@@ -24,7 +24,7 @@ import { useAuth } from "@/context/auth-context";
 import { useNotifications } from "@/hooks/use-notifications";
 import { createPayment } from "@/data/mockData";
 
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -174,7 +174,7 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
 
   const handleSubmitBooking = async (data: BookingFormData) => {
      try {
-          await axios.post("/front-end/book-room", data);
+          await HttpClient.post("/front-end/book-room", data);
           toast({ title: "Booking Successful", description: "Your booking has been created successfully." });
         } catch {
           toast({

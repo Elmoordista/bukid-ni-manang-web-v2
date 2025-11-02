@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +51,7 @@ export default function PaymentManagement() {
   const fetchPayments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/payment", {
+      const response = await HttpClient.get("/payment", {
         params: {
           page: currentPage,
           per_page: pageSize,
@@ -72,7 +72,7 @@ export default function PaymentManagement() {
   const handleUpdateStatus = async (paymentId: string, newStatus: Payment["status"]) => {
      try {
       setLoading(true);
-        const response = await axios.put("/payment/" + paymentId,{
+        const response = await HttpClient.put("/payment/" + paymentId,{
           status: newStatus
         });
         toast({
@@ -118,7 +118,7 @@ export default function PaymentManagement() {
   Notiflix.Loading.standard('Generating PDF...');
   try {
 
-    const response = await axios.post(
+    const response = await HttpClient.post(
       "payment/export-payments",
       { headerNote: "Generated via React frontend" },
       { responseType: "blob" } // important

@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -48,7 +48,7 @@ export default function LoginForm() {
     console.log('Login form submitted:', values);
 
     try {
-       const response = await axios.post('/auth/login',values); 
+       const response = await HttpClient.post('/auth/login',values); 
         // store data in auth context
         if(response.data?.user){
           handleSetUser(response.data.user);

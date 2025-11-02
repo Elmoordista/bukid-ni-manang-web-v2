@@ -9,7 +9,7 @@ import { useAuth } from "@/context/auth-context";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 export default function Accommodations() {
   const { isAuthenticated } = useAuth();
@@ -74,7 +74,7 @@ export default function Accommodations() {
   const fetchRooms = async () => {
     setIsLoading(true)
     try {
-      const res = await axios.get(`/front-end/get-rooms`);
+      const res = await HttpClient.get(`/front-end/get-rooms`);
       if(res.data){
         setAccommodations(res.data.data);
       }

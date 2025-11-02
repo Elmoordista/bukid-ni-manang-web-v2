@@ -14,7 +14,7 @@ import { useNotifications } from "@/hooks/use-notifications";
 import { mockBookings } from "@/data/mockData";
 import type { Booking } from "@/data/mockData";
 
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 interface BookingActionDialogProps {
   booking: Booking;
@@ -48,7 +48,7 @@ function BookingActionDialog({ booking, isOpen, onClose, action, handleUpdateBoo
       //   mockBookings[index] = updatedBooking;
       // }
 
-      const response = await axios.put(`/booking/${booking.id}`,updatedBooking);
+      const response = await HttpClient.put(`/booking/${booking.id}`,updatedBooking);
       console.log("Booking updated:", response.data);
 
       // // Send notifications

@@ -4,7 +4,7 @@ import BookingManagementComponent from "@/components/admin/booking-management";
 import type { Booking } from "@/data/mockData";
 import { mockBookings } from "@/data/mockData";
 
-import axios from "@/../axios/axiosInstance.js";
+import HttpClient from "@/lib/axiosInstance.ts";
 import { p } from "node_modules/@tanstack/query-core/build/modern/hydration-CeGZtiZv";
 
 export default function BookingManagement() {
@@ -17,7 +17,7 @@ export default function BookingManagement() {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get("/booking");
+      const response = await HttpClient.get("/booking");
       setBookings(response.data.data);
       console.log("Fetched bookings:", response.data);
     } catch (error) {
