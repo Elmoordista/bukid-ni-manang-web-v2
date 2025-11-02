@@ -17,9 +17,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import HttpClient from "@/lib/axiosInstance.ts";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -31,6 +31,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
+  const {toast} = useToast();
   const navigate = useNavigate();
   const { login, handleSetUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -69,12 +70,14 @@ export default function LoginForm() {
         }
          
         } catch (error) {
+          console.log('Login error:', error.response?.data?.message);
            toast({
             title: "Login Failed",
-            description: error.message || "Invalid email or password.",
+            description: error.response?.data?.message || "Invalid email or password.",
             variant: "destructive",
           });
         } finally {
+          setIsLoading(false);
         }
 
     // try {
