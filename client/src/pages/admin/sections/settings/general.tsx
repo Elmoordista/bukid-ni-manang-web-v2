@@ -8,58 +8,93 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
 import { Globe, Mail, Phone, Map, Clock } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import HttpClient from "@/lib/axiosInstance.ts";
+import Notiflix from "notiflix";
 
 interface GeneralSettings {
-  siteName: string;
-  tagline: string;
-  description: string;
-  contactEmail: string;
-  phoneNumber: string;
-  address: string;
-  location: {
-    latitude: string;
-    longitude: string;
+  basic_information: {
+    siteName: string;
+    tagline: string;
+    description: string;
   };
-  timezone: string;
-  openingHours: string;
-  socialMedia: {
+  contact_information: {
+    contactEmail: string;
+    phoneNumber: string;
+    address: string;
+    location: {
+      latitude: string;
+      longitude: string;
+    };
+  };
+  business_hours: {
+    timezone: string;
+    openingHours: string;
+  };
+  social_media: {
     facebook: string;
     instagram: string;
     twitter: string;
   };
-  maintenanceMode: boolean;
-  showPrices: boolean;
+  site_options: {
+    maintenanceMode: boolean;
+    showPrices: boolean;
+  };
 }
 
 export default function GeneralSettings() {
+  const {toast} = useToast();
   const [settings, setSettings] = useState<GeneralSettings>({
-    siteName: "Bukid ni Manang",
-    tagline: "Your perfect getaway destination",
-    description: "Experience tranquility and luxury in our mountain resort.",
-    contactEmail: "contact@bukidnimanang.com",
-    phoneNumber: "+63 XXX XXX XXXX",
-    address: "Sample Address, City, Province",
-    location: {
-      latitude: "0",
-      longitude: "0",
+    basic_information: {
+      siteName: "Bukid ni Manang",
+      tagline: "Your perfect getaway destination",
+      description: "Experience tranquility and luxury in our mountain resort.",
     },
-    timezone: "Asia/Manila",
-    openingHours: "24/7",
-    socialMedia: {
+    contact_information: {
+      contactEmail: "contact@bukidnimanang.com",
+      phoneNumber: "+63 XXX XXX XXXX",
+      address: "Sample Address, City, Province",
+      location: {
+        latitude: "0",
+        longitude: "0",
+      },
+    },
+    business_hours: {
+      timezone: "Asia/Manila",
+      openingHours: "24/7",
+    },
+    social_media: {
       facebook: "https://facebook.com/bukidnimanang",
       instagram: "https://instagram.com/bukidnimanang",
       twitter: "https://twitter.com/bukidnimanang",
     },
-    maintenanceMode: false,
-    showPrices: true,
+    site_options: {
+      maintenanceMode: false,
+      showPrices: true,
+    },
   });
 
-  const handleSave = () => {
-    // TODO: Implement API call to save settings
-    toast({
-      title: "Settings saved",
-      description: "Your general settings have been successfully updated.",
-    });
+  const handleSave = async() => {
+    Notiflix.Loading.circle('Saving settings...');
+    try {
+      // Replace with actual API call
+      await HttpClient.post('/settings', {
+        settings: settings,
+        type: 'general',
+      });
+      toast({
+        title: "Settings Saved",
+        description: "Your general settings have been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was an error saving your settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      Notiflix.Loading.remove();
+    }
   };
 
   return (
@@ -78,38 +113,45 @@ export default function GeneralSettings() {
             <CardTitle>Basic Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="siteName">Resort Name</Label>
-              <Input
-                id="siteName"
-                value={settings.siteName}
-                onChange={(e) =>
-                  setSettings({ ...settings, siteName: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="tagline">Tagline</Label>
-              <Input
-                id="tagline"
-                value={settings.tagline}
-                onChange={(e) =>
-                  setSettings({ ...settings, tagline: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={settings.description}
-                onChange={(e) =>
-                  setSettings({ ...settings, description: e.target.value })
-                }
-              />
-            </div>
+            <Label>Resort Name</Label>
+            <Input
+              value={settings.basic_information.siteName}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  basic_information: {
+                    ...settings.basic_information,
+                    siteName: e.target.value,
+                  },
+                })
+              }
+            />
+            <Label>Tagline</Label>
+            <Input
+              value={settings.basic_information.tagline}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  basic_information: {
+                    ...settings.basic_information,
+                    tagline: e.target.value,
+                  },
+                })
+              }
+            />
+            <Label>Description</Label>
+            <Textarea
+              value={settings.basic_information.description}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  basic_information: {
+                    ...settings.basic_information,
+                    description: e.target.value,
+                  },
+                })
+              }
+            />
           </CardContent>
         </Card>
 
@@ -119,75 +161,82 @@ export default function GeneralSettings() {
             <CardTitle>Contact Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="contactEmail">Email Address</Label>
-                <div className="flex">
-                  <Mail className="w-4 h-4 mr-2 mt-2.5 text-muted-foreground" />
-                  <Input
-                    id="contactEmail"
-                    type="email"
-                    value={settings.contactEmail}
-                    onChange={(e) =>
-                      setSettings({ ...settings, contactEmail: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
+            <Label>Email Address</Label>
+            <Input
+              type="email"
+              value={settings.contact_information.contactEmail}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  contact_information: {
+                    ...settings.contact_information,
+                    contactEmail: e.target.value,
+                  },
+                })
+              }
+            />
 
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-                <div className="flex">
-                  <Phone className="w-4 h-4 mr-2 mt-2.5 text-muted-foreground" />
-                  <Input
-                    id="phoneNumber"
-                    value={settings.phoneNumber}
-                    onChange={(e) =>
-                      setSettings({ ...settings, phoneNumber: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-            </div>
+            <Label>Phone Number</Label>
+            <Input
+              value={settings.contact_information.phoneNumber}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  contact_information: {
+                    ...settings.contact_information,
+                    phoneNumber: e.target.value,
+                  },
+                })
+              }
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <div className="flex">
-                <Map className="w-4 h-4 mr-2 mt-2.5 text-muted-foreground" />
+            <Label>Address</Label>
+            <Input
+              value={settings.contact_information.address}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  contact_information: {
+                    ...settings.contact_information,
+                    address: e.target.value,
+                  },
+                })
+              }
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Latitude</Label>
                 <Input
-                  id="address"
-                  value={settings.address}
-                  onChange={(e) =>
-                    setSettings({ ...settings, address: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="latitude">Latitude</Label>
-                <Input
-                  id="latitude"
-                  value={settings.location.latitude}
+                  value={settings.contact_information.location.latitude}
                   onChange={(e) =>
                     setSettings({
                       ...settings,
-                      location: { ...settings.location, latitude: e.target.value },
+                      contact_information: {
+                        ...settings.contact_information,
+                        location: {
+                          ...settings.contact_information.location,
+                          latitude: e.target.value,
+                        },
+                      },
                     })
                   }
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="longitude">Longitude</Label>
+              <div>
+                <Label>Longitude</Label>
                 <Input
-                  id="longitude"
-                  value={settings.location.longitude}
+                  value={settings.contact_information.location.longitude}
                   onChange={(e) =>
                     setSettings({
                       ...settings,
-                      location: { ...settings.location, longitude: e.target.value },
+                      contact_information: {
+                        ...settings.contact_information,
+                        location: {
+                          ...settings.contact_information.location,
+                          longitude: e.target.value,
+                        },
+                      },
                     })
                   }
                 />
@@ -201,35 +250,36 @@ export default function GeneralSettings() {
           <CardHeader>
             <CardTitle>Business Hours</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
-                <div className="flex">
-                  <Globe className="w-4 h-4 mr-2 mt-2.5 text-muted-foreground" />
-                  <Input
-                    id="timezone"
-                    value={settings.timezone}
-                    onChange={(e) =>
-                      setSettings({ ...settings, timezone: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="openingHours">Opening Hours</Label>
-                <div className="flex">
-                  <Clock className="w-4 h-4 mr-2 mt-2.5 text-muted-foreground" />
-                  <Input
-                    id="openingHours"
-                    value={settings.openingHours}
-                    onChange={(e) =>
-                      setSettings({ ...settings, openingHours: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Timezone</Label>
+              <Input
+                value={settings.business_hours.timezone}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    business_hours: {
+                      ...settings.business_hours,
+                      timezone: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div>
+              <Label>Opening Hours</Label>
+              <Input
+                value={settings.business_hours.openingHours}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    business_hours: {
+                      ...settings.business_hours,
+                      openingHours: e.target.value,
+                    },
+                  })
+                }
+              />
             </div>
           </CardContent>
         </Card>
@@ -240,56 +290,23 @@ export default function GeneralSettings() {
             <CardTitle>Social Media Links</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="facebook">Facebook</Label>
-              <Input
-                id="facebook"
-                value={settings.socialMedia.facebook}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    socialMedia: {
-                      ...settings.socialMedia,
-                      facebook: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="instagram">Instagram</Label>
-              <Input
-                id="instagram"
-                value={settings.socialMedia.instagram}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    socialMedia: {
-                      ...settings.socialMedia,
-                      instagram: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="twitter">Twitter</Label>
-              <Input
-                id="twitter"
-                value={settings.socialMedia.twitter}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    socialMedia: {
-                      ...settings.socialMedia,
-                      twitter: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
+            {Object.entries(settings.social_media).map(([platform, value]) => (
+              <div key={platform} className="space-y-2">
+                <Label className="capitalize">{platform}</Label>
+                <Input
+                  value={value}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      social_media: {
+                        ...settings.social_media,
+                        [platform]: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </div>
+            ))}
           </CardContent>
         </Card>
 
@@ -300,31 +317,43 @@ export default function GeneralSettings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
+              <div>
                 <Label>Maintenance Mode</Label>
                 <p className="text-sm text-muted-foreground">
-                  Enable this to show a maintenance page to visitors
+                  Enable maintenance mode for visitors
                 </p>
               </div>
               <Switch
-                checked={settings.maintenanceMode}
+                checked={settings.site_options.maintenanceMode}
                 onCheckedChange={(checked) =>
-                  setSettings({ ...settings, maintenanceMode: checked })
+                  setSettings({
+                    ...settings,
+                    site_options: {
+                      ...settings.site_options,
+                      maintenanceMode: checked,
+                    },
+                  })
                 }
               />
             </div>
             <Separator />
             <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
+              <div>
                 <Label>Show Prices</Label>
                 <p className="text-sm text-muted-foreground">
-                  Display room prices on the website
+                  Display room prices publicly
                 </p>
               </div>
               <Switch
-                checked={settings.showPrices}
+                checked={settings.site_options.showPrices}
                 onCheckedChange={(checked) =>
-                  setSettings({ ...settings, showPrices: checked })
+                  setSettings({
+                    ...settings,
+                    site_options: {
+                      ...settings.site_options,
+                      showPrices: checked,
+                    },
+                  })
                 }
               />
             </div>

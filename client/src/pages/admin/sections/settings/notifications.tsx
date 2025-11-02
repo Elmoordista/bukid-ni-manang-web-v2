@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/components/ui/use-toast";
 import { Mail, MessageSquare, Bell } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import Notiflix from "notiflix";
+import HttpClient from "@/lib/axiosInstance.ts";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface NotificationSettings {
   email: {
@@ -27,46 +38,26 @@ interface NotificationSettings {
     fromNumber: string;
   };
   notifications: {
-    newBooking: {
-      enabled: boolean;
-      sendEmail: boolean;
-      sendSms: boolean;
-      emailTemplate: string;
-      smsTemplate: string;
-    };
-    bookingConfirmation: {
-      enabled: boolean;
-      sendEmail: boolean;
-      sendSms: boolean;
-      emailTemplate: string;
-      smsTemplate: string;
-    };
-    bookingCancellation: {
-      enabled: boolean;
-      sendEmail: boolean;
-      sendSms: boolean;
-      emailTemplate: string;
-      smsTemplate: string;
-    };
-    paymentReceived: {
-      enabled: boolean;
-      sendEmail: boolean;
-      sendSms: boolean;
-      emailTemplate: string;
-      smsTemplate: string;
-    };
-    checkInReminder: {
-      enabled: boolean;
-      sendEmail: boolean;
-      sendSms: boolean;
-      emailTemplate: string;
-      smsTemplate: string;
-      daysBeforeCheckIn: number;
-    };
+    newBooking: NotificationEvent;
+    bookingConfirmation: NotificationEvent;
+    bookingCancellation: NotificationEvent;
+    paymentReceived: NotificationEvent;
+    checkInReminder: NotificationEvent & { daysBeforeCheckIn: number };
   };
 }
 
+interface NotificationEvent {
+  enabled: boolean;
+  sendEmail: boolean;
+  sendSms: boolean;
+  emailTemplate: string;
+  smsTemplate: string;
+}
+
 export default function NotificationSettings() {
+   const { toast } = useToast();
+   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+   const [testEmail, setTestEmail] = useState("");
   const [settings, setSettings] = useState<NotificationSettings>({
     email: {
       enabled: true,
@@ -124,38 +115,145 @@ export default function NotificationSettings() {
     },
   });
 
-  const handleSave = () => {
-    toast({
-      title: "Settings saved",
-      description: "Your notification settings have been successfully updated.",
-    });
-  };
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
+  const fetchSettings = async () =>{
+    Notiflix.Loading.circle('Loading settings...');
+    try {
+      // Replace with actual API call
+      const response = await HttpClient.get('/settings?type=notifications');
+      if(response.data?.data){
+        const fetchedSettings = response.data.data;
+        const setting = fetchedSettings? JSON.parse(fetchedSettings.settings) : null;
+        if(setting){
+          setSettings(setting);
+        }
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was an error saving your settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      Notiflix.Loading.remove();
+    }
+  }
+  const handleSave = async () =>{
+    Notiflix.Loading.circle('Saving settings...');
+    try {
+      // Replace with actual API call
+      await HttpClient.post('/settings', {
+        settings: settings,
+        type: 'notifications',
+      });
+      toast({
+        title: "Settings Saved",
+        description: "Your notification settings have been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was an error saving your settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      Notiflix.Loading.remove();
+    }
+  }
+    
+
+  const handleSendTestEmail = async() =>{
+      try {
+        await HttpClient.post('/settings/test-email', {
+          toEmail: testEmail,
+          settings: settings.email,
+        });
+        toast({
+          title: "Test Email Sent",
+          description: `A test email has been sent to ${testEmail}.`,
+        });
+        setIsEmailModalOpen(false);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "There was an error sending the test email. Please try again.",
+          variant: "destructive",
+        });
+      }
+  }
+
+  const handleCheckConfig = () =>{
+   //check if host, port, username, password are filled
+   if(
+     !settings.email.smtpHost ||
+      !settings.email.smtpPort ||
+      !settings.email.smtpUsername ||
+      !settings.email.smtpPassword
+   ){
+      return false;
+   }
+   return true;
+  }
   const handleTestEmail = () => {
-    toast({
-      title: "Test email sent",
-      description: "A test email has been sent to the configured address.",
-    });
-  };
-
-  const handleTestSms = () => {
-    toast({
-      title: "Test SMS sent",
-      description: "A test SMS has been sent to the configured number.",
-    });
-  };
+    if(!handleCheckConfig()){
+      toast({
+        title: "Incomplete SMTP Configuration",
+        description: "Please fill in all SMTP settings before sending a test email.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsEmailModalOpen(true);
+  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Notification Settings</h1>
+        <h1 className="text-3xl font-bold text-foreground">
+          Notification Settings
+        </h1>
         <p className="text-muted-foreground">
           Configure how and when notifications are sent to admins and guests.
         </p>
       </div>
 
+      
+      <Dialog open={isEmailModalOpen} onOpenChange={setIsEmailModalOpen}>
+        <DialogTrigger asChild>
+          <Button>
+            <Mail className="w-4 h-4 mr-2" />
+            Send Test Email
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Test Email</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <Label htmlFor="testEmail">Recipient Email</Label>
+            <Input
+              id="testEmail"
+              placeholder="Enter test recipient email"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+            />
+          </div>
+
+          <DialogFooter className="mt-4">
+            <Button variant="secondary" onClick={() => setIsEmailModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSendTestEmail}>Send</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid gap-6">
-        {/* Email Configuration */}
+        {/* 📨 EMAIL CONFIGURATION */}
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
@@ -172,103 +270,88 @@ export default function NotificationSettings() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Email Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fromName">From Name</Label>
-                <Input
-                  id="fromName"
-                  value={settings.email.fromName}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      email: { ...settings.email, fromName: e.target.value },
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="fromEmail">From Email</Label>
-                <Input
-                  id="fromEmail"
-                  type="email"
-                  value={settings.email.fromEmail}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      email: { ...settings.email, fromEmail: e.target.value },
-                    })
-                  }
-                />
-              </div>
+              <InputGroup
+                label="From Name"
+                id="fromName"
+                value={settings.email.fromName}
+                onChange={(val) =>
+                  setSettings({
+                    ...settings,
+                    email: { ...settings.email, fromName: val },
+                  })
+                }
+              />
+              <InputGroup
+                label="From Email"
+                id="fromEmail"
+                type="email"
+                value={settings.email.fromEmail}
+                onChange={(val) =>
+                  setSettings({
+                    ...settings,
+                    email: { ...settings.email, fromEmail: val },
+                  })
+                }
+              />
+            </div>
+
+            {/* SMTP Settings */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InputGroup
+                label="SMTP Host"
+                id="smtpHost"
+                value={settings.email.smtpHost}
+                onChange={(val) =>
+                  setSettings({
+                    ...settings,
+                    email: { ...settings.email, smtpHost: val },
+                  })
+                }
+              />
+              <InputGroup
+                label="SMTP Port"
+                id="smtpPort"
+                type="number"
+                value={settings.email.smtpPort.toString()}
+                onChange={(val) =>
+                  setSettings({
+                    ...settings,
+                    email: { ...settings.email, smtpPort: parseInt(val) },
+                  })
+                }
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="smtpHost">SMTP Host</Label>
-                <Input
-                  id="smtpHost"
-                  value={settings.email.smtpHost}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      email: { ...settings.email, smtpHost: e.target.value },
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="smtpPort">SMTP Port</Label>
-                <Input
-                  id="smtpPort"
-                  type="number"
-                  value={settings.email.smtpPort}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      email: { ...settings.email, smtpPort: parseInt(e.target.value) },
-                    })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="smtpUsername">SMTP Username</Label>
-                <Input
-                  id="smtpUsername"
-                  value={settings.email.smtpUsername}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      email: { ...settings.email, smtpUsername: e.target.value },
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="smtpPassword">SMTP Password</Label>
-                <Input
-                  id="smtpPassword"
-                  type="password"
-                  value={settings.email.smtpPassword}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      email: { ...settings.email, smtpPassword: e.target.value },
-                    })
-                  }
-                />
-              </div>
+              <InputGroup
+                label="SMTP Username"
+                id="smtpUsername"
+                value={settings.email.smtpUsername}
+                onChange={(val) =>
+                  setSettings({
+                    ...settings,
+                    email: { ...settings.email, smtpUsername: val },
+                  })
+                }
+              />
+              <InputGroup
+                label="SMTP Password"
+                id="smtpPassword"
+                type="password"
+                value={settings.email.smtpPassword}
+                onChange={(val) =>
+                  setSettings({
+                    ...settings,
+                    email: { ...settings.email, smtpPassword: val },
+                  })
+                }
+              />
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Use SSL</Label>
-                <p className="text-sm text-muted-foreground">
-                  Enable SSL/TLS for secure email transmission
-                </p>
-              </div>
+              <Label>Use SSL</Label>
               <Switch
                 checked={settings.email.useSsl}
                 onCheckedChange={(checked) =>
@@ -287,8 +370,8 @@ export default function NotificationSettings() {
           </CardContent>
         </Card>
 
-        {/* SMS Configuration */}
-        <Card>
+        {/* 📱 SMS CONFIGURATION */}
+        {/* <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>SMS Configuration</CardTitle>
@@ -304,58 +387,48 @@ export default function NotificationSettings() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="smsProvider">SMS Provider</Label>
-                <Input
-                  id="smsProvider"
-                  value={settings.sms.provider}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      sms: { ...settings.sms, provider: e.target.value },
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="smsApiKey">API Key</Label>
-                <Input
-                  id="smsApiKey"
-                  type="password"
-                  value={settings.sms.apiKey}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      sms: { ...settings.sms, apiKey: e.target.value },
-                    })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="fromNumber">From Number</Label>
-              <Input
-                id="fromNumber"
-                value={settings.sms.fromNumber}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    sms: { ...settings.sms, fromNumber: e.target.value },
-                  })
-                }
-              />
-            </div>
+            <InputGroup
+              label="Provider"
+              id="provider"
+              value={settings.sms.provider}
+              onChange={(val) =>
+                setSettings({
+                  ...settings,
+                  sms: { ...settings.sms, provider: val },
+                })
+              }
+            />
+            <InputGroup
+              label="API Key"
+              id="apiKey"
+              value={settings.sms.apiKey}
+              onChange={(val) =>
+                setSettings({
+                  ...settings,
+                  sms: { ...settings.sms, apiKey: val },
+                })
+              }
+            />
+            <InputGroup
+              label="From Number"
+              id="fromNumber"
+              value={settings.sms.fromNumber}
+              onChange={(val) =>
+                setSettings({
+                  ...settings,
+                  sms: { ...settings.sms, fromNumber: val },
+                })
+              }
+            />
 
             <Button onClick={handleTestSms}>
               <MessageSquare className="w-4 h-4 mr-2" />
               Send Test SMS
             </Button>
           </CardContent>
-        </Card>
+        </Card> */}
 
-        {/* Notification Events */}
+        {/* 🔔 NOTIFICATION EVENTS */}
         <Card>
           <CardHeader>
             <CardTitle>Notification Events</CardTitle>
@@ -363,132 +436,19 @@ export default function NotificationSettings() {
           <CardContent className="space-y-6">
             {Object.entries(settings.notifications).map(([key, notification]) => (
               <div key={key} className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">{key.replace(/([A-Z])/g, ' $1').trim()}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Configure notifications for {key.toLowerCase()}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notification.enabled}
-                    onCheckedChange={(checked) =>
-                      setSettings({
-                        ...settings,
-                        notifications: {
-                          ...settings.notifications,
-                          [key]: { ...notification, enabled: checked },
-                        },
-                      })
-                    }
-                  />
-                </div>
-
-                {notification.enabled && (
-                  <>
-                    <div className="flex space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={notification.sendEmail}
-                          onCheckedChange={(checked) =>
-                            setSettings({
-                              ...settings,
-                              notifications: {
-                                ...settings.notifications,
-                                [key]: { ...notification, sendEmail: checked },
-                              },
-                            })
-                          }
-                        />
-                        <Label>Send Email</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={notification.sendSms}
-                          onCheckedChange={(checked) =>
-                            setSettings({
-                              ...settings,
-                              notifications: {
-                                ...settings.notifications,
-                                [key]: { ...notification, sendSms: checked },
-                              },
-                            })
-                          }
-                        />
-                        <Label>Send SMS</Label>
-                      </div>
-                    </div>
-
-                    <div className="grid gap-4">
-                      {notification.sendEmail && (
-                        <div className="space-y-2">
-                          <Label>Email Template</Label>
-                          <Textarea
-                            value={notification.emailTemplate}
-                            onChange={(e) =>
-                              setSettings({
-                                ...settings,
-                                notifications: {
-                                  ...settings.notifications,
-                                  [key]: {
-                                    ...notification,
-                                    emailTemplate: e.target.value,
-                                  },
-                                },
-                              })
-                            }
-                            rows={3}
-                          />
-                        </div>
-                      )}
-
-                      {notification.sendSms && (
-                        <div className="space-y-2">
-                          <Label>SMS Template</Label>
-                          <Input
-                            value={notification.smsTemplate}
-                            onChange={(e) =>
-                              setSettings({
-                                ...settings,
-                                notifications: {
-                                  ...settings.notifications,
-                                  [key]: {
-                                    ...notification,
-                                    smsTemplate: e.target.value,
-                                  },
-                                },
-                              })
-                            }
-                          />
-                        </div>
-                      )}
-
-                      {'daysBeforeCheckIn' in notification && (
-                        <div className="space-y-2">
-                          <Label>Days Before Check-in</Label>
-                          <Input
-                            type="number"
-                            value={notification.daysBeforeCheckIn}
-                            onChange={(e) =>
-                              setSettings({
-                                ...settings,
-                                notifications: {
-                                  ...settings.notifications,
-                                  [key]: {
-                                    ...notification,
-                                    daysBeforeCheckIn: parseInt(e.target.value),
-                                  },
-                                },
-                              })
-                            }
-                            min="1"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-
+                <NotificationEventCard
+                  label={key}
+                  data={notification}
+                  onChange={(updated) =>
+                    setSettings({
+                      ...settings,
+                      notifications: {
+                        ...settings.notifications,
+                        [key]: updated,
+                      },
+                    })
+                  }
+                />
                 <Separator />
               </div>
             ))}
@@ -499,6 +459,85 @@ export default function NotificationSettings() {
       <div className="flex justify-end">
         <Button onClick={handleSave}>Save Changes</Button>
       </div>
+    </div>
+  );
+}
+
+/* 🔧 Reusable small components for clarity */
+function InputGroup({
+  label,
+  id,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  id: string;
+  value: string;
+  onChange: (val: string) => void;
+  type?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+}
+
+function NotificationEventCard({
+  label,
+  data,
+  onChange,
+}: {
+  label: string;
+  data: any;
+  onChange: (updated: any) => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <Label className="text-base">
+          {label.replace(/([A-Z])/g, " $1").trim()}
+        </Label>
+        <Switch
+          checked={data.enabled}
+          onCheckedChange={(checked) => onChange({ ...data, enabled: checked })}
+        />
+      </div>
+
+      {data.enabled && (
+        <div className="space-y-4 mt-3">
+          <Switch
+            checked={data.sendEmail}
+            onCheckedChange={(checked) => onChange({ ...data, sendEmail: checked })}
+          />
+          {data.sendEmail && (
+            <Textarea
+              rows={3}
+              value={data.emailTemplate}
+              onChange={(e) => onChange({ ...data, emailTemplate: e.target.value })}
+            />
+          )}
+
+          {"daysBeforeCheckIn" in data && (
+            <InputGroup
+              label="Days Before Check-in"
+              id={`${label}-days`}
+              type="number"
+              value={data.daysBeforeCheckIn.toString()}
+              onChange={(val) =>
+                onChange({ ...data, daysBeforeCheckIn: parseInt(val) })
+              }
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }

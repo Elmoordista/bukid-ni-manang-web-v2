@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -16,6 +14,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
+import Notiflix from "notiflix";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 const venueSettingsSchema = z.object({
   venueName: z.string().min(1, "Venue name is required"),
@@ -48,13 +48,27 @@ export default function VenueSettings() {
     },
   });
 
-  const onSubmit = (data: VenueSettingsData) => {
-    // Here you would typically save the settings to your backend
-    console.log("Saving venue settings:", data);
-    toast({
-      title: "Settings Updated",
-      description: "Venue settings have been updated successfully.",
-    });
+  const onSubmit = async (data: VenueSettingsData) => {
+    Notiflix.Loading.circle('Saving settings...');
+    try {
+      // Replace with actual API call
+      await HttpClient.post('/settings', {
+        settings: data,
+        type: 'venue',
+      });
+      toast({
+        title: "Settings Saved",
+        description: "Your venue settings have been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was an error saving your settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      Notiflix.Loading.remove();
+    }
   };
 
   return (
