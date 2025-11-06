@@ -76,11 +76,18 @@
 }
 
 .hero-gradient {
-  background: linear-gradient(135deg, hsl(158 64% 43% / 0.95), hsl(173 58% 39% / 0.9));
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2));
 }
 
 .modern-gradient {
   background: linear-gradient(135deg, hsl(158 64% 51% / 0.1), hsl(173 58% 85% / 0.1));
+}
+
+.about-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .glass-effect {
@@ -104,8 +111,28 @@
 }
 
 .booking-widget {
-  backdrop-filter: blur(10px);
-  background: hsl(0 0% 100% / 0.95);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.booking-widget input,
+.booking-widget select,
+.booking-widget button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.booking-widget label {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.booking-widget input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .parallax-bg {

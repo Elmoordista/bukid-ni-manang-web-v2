@@ -37,7 +37,7 @@ export default function Home() {
       <section className="py-16 sm:py-24 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
+            <div className="about-section">
               <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-foreground">
                 Welcome to Bukid ni Manang Farm & Resort
               </h2>
@@ -95,7 +95,7 @@ export default function Home() {
       <section className="py-16 sm:py-24 bg-background relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 -skew-y-6 transform origin-top-right"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 about-section">
             <div className="inline-block">
               <span className="px-4 py-2 rounded-full text-sm font-medium bg-primary/10 text-primary mb-4 inline-block">
                 Interactive Experience

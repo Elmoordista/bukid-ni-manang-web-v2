@@ -56,79 +56,26 @@ export const AMENITIES = [
     description: "Relax and unwind in our eco-friendly swimming pool, set within a 700 sq.m. area and surrounded by lush greenery and natural landscapes.",
     price: "Entrance Fee: ₱150/adult, ₱130/child (1–5) | Cottages (15–20 pax): ₱1,500 | Tables (6 pax): ₱500",
     details: "Depth ranges from 3 feet (shallowest) to 6 feet (deepest). Pool capacity of up to 250 people. Lifeguards and safety equipment provided.",
-    guidelines: "Open 9AM - 9PM | Non-refundable policy for food and cottage reservations | Guests may bring food IF they rent a cottage or table | Outside drinks, including liquor, are not allowed."
+    guidelines: "Open 9AM - 9PM | Non-refundable policy for food and cottage reservations | Guests may bring food IF they rent a cottage or table | Outside drinks, including liquor, are not allowed.",
+    isBookable: true
   },
   {
     icon: "utensils",
     name: "Restaurant",
-    description: "Enjoy delicious farm-to-table meals in our spacious restaurant event area that can accommodate up to 200 people.",
-    price: "Events: ₱15,000 for 6 hours",
-    details: "26 tables, 150 chairs, and 6 traditional 'kubo' huts (12-person capacity each). Buffet setup available upon request.",
-    guidelines: "Open 9AM - 9PM | Non-refundable policy | Outside food and drinks, including liquor, are not allowed."
+    description: "Experience authentic farm-to-table dining in our spacious restaurant area with a diverse menu of local and international cuisine.",
+    price: "Table Reservation: Free (Subject to availability)",
+    details: "26 tables, 150 chairs, and 6 traditional 'kubo' huts. Serving breakfast, lunch, and dinner with a wide selection of dishes.",
+    guidelines: "Open 9AM - 9PM | Advance reservations recommended for groups | Outside food and drinks not allowed",
+    isBookable: true
   },
   {
-    icon: "flower",
-    name: "Vineyard",
-    description: "Walk among our thriving grapevines in a 500 sq.m. area dedicated to recreation and sightseeing.",
-    price: "Free — included in the ₱50 entrance fee",
-    details: "Perfect spot to relax, unwind, and savor the natural charm of the surroundings.",
-    guidelines: "Open 9AM - 9PM | Includes a guided tour | Entrance fees are for walk-ins only"
-  },
-  {
-    icon: "fort",
-    name: "Dragon Fruit Fort",
-    description: "Explore our 15,000 sq.m. dragon fruit plantation with over 850 thriving posts.",
-    price: "Free — included in the ₱50 entrance fee | Fruit picking: ₱200 per kilo (in season)",
-    details: "Try our signature dragon fruit jam—a sweet treat straight from the farm.",
-    guidelines: "Open 9AM - 6PM | Entrance fees are for walk-ins only"
-  },
-  {
-    icon: "coffee",
-    name: "Snack House",
-    description: "Quick bites and refreshments throughout the day.",
-    price: "Food and Drinks: ₱50 - ₱200",
-    details: "Various snacks and refreshments available",
-    guidelines: "Open 9AM - 9PM | Entrance fees are for walk-ins only"
-  },
-  {
-    icon: "coffee",
-    name: "Café",
-    description: "Cozy place for coffee, tea, and pastries.",
-    price: "Specialty drinks ₱80 - ₱150",
-    details: "Selection of hot and cold beverages, fresh pastries",
-    guidelines: "Open 10AM - 9PM"
-  },
-  {
-    icon: "tree",
-    name: "Tree House",
-    description: "Our three-storey treehouse offers a unique spot for recreation and sightseeing.",
-    price: "Free — included in the ₱50 entrance fee",
-    details: "Can accommodate up to 20 people. Perfect for those seeking tranquility and a closer connection to the outdoors.",
-    guidelines: "Open during daylight hours"
-  },
-  {
-    icon: "fish",
-    name: "Boating & Fishing Lake",
-    description: "Spread across 1 hectare, our serene lake area is perfect for recreation and sightseeing.",
-    price: "Free — included in the ₱50 entrance fee",
-    details: "Peaceful setting for water activities and relaxation",
-    guidelines: "Open 9AM - 6PM | Entrance fees are for walk-ins only"
-  },
-  {
-    icon: "gamepad",
-    name: "Playground",
-    description: "Our kids' play area features a slide, seesaw, swing, and trampoline.",
-    price: "₱50/head",
-    details: "Designed to safely accommodate up to 20 children (ages 1–9) at a time",
-    guidelines: "Open 9AM - 6PM | Playground tickets for walk-ins only"
-  },
-  {
-    icon: "car",
-    name: "Golf Cart Ride",
-    description: "Golf Cart Ride to Mountain Top",
-    price: "₱50 per head for a one-way trip",
-    details: "Convenient way to explore the property",
-    guidelines: "Open 9AM - 9PM | Tickets for walk-ins only"
+    icon: "partyPopper",
+    name: "Events Venue",
+    description: "Host your special occasions in our versatile event spaces. Perfect for weddings, corporate events, and celebrations.",
+    price: "Starting at ₱25,000 for 6 hours",
+    details: "Multiple venue options available. Can accommodate up to 300 guests. Full-service event planning available.",
+    guidelines: "Booking required at least 2 weeks in advance | 50% down payment required to secure date | Customizable packages available",
+    isBookable: true
   },
   {
     icon: "bus",
@@ -136,7 +83,8 @@ export const AMENITIES = [
     description: "Convenient transportation from the city proper to the farm and back.",
     price: "₱500 (maximum of 15 pax)",
     details: "Ideal for guests without private vehicles or those who prefer a hassle-free trip",
-    guidelines: "Pick-up Location: Jollibee Tagbilaran Main, beside the plaza | One-way trip | Maximum 15 passengers"
+    guidelines: "Pick-up Location: Jollibee Tagbilaran Main, beside the plaza | One-way trip | Maximum 15 passengers",
+    isBookable: true
   }
 ];
 

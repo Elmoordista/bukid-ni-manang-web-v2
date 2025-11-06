@@ -136,7 +136,7 @@ export default function GCashPaymentForm({ bookingId, amount, onPaymentComplete 
           <div className="bg-muted p-4 rounded-lg">
             <h4 className="font-medium mb-2">Payment Instructions:</h4>
             <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
-              <li>Open your GCash app and send payment to: 0917 100 9766</li>
+              <li>Open your GCash app and send payment to: 09655866772</li>
               <li>Take a screenshot of the successful payment</li>
               <li>Copy the reference number from your GCash transaction</li>
               <li>Fill in the form with your payment details</li>

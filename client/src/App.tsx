@@ -31,6 +31,7 @@ const BookingSettings = React.lazy(() => import("./pages/admin/sections/settings
 const NotificationSettings = React.lazy(() => import("./pages/admin/sections/settings/notifications"));
 const Accommodations = React.lazy(() => import("./pages/accommodations"));
 const Amenities = React.lazy(() => import("./pages/amenities"));
+const AmenityBookingsPanel = React.lazy(() => import("./components/admin/amenity-bookings"));
 const VirtualTour = React.lazy(() => import("./pages/virtual-tour-enhanced"));
 
 const Login = React.lazy(() => Promise.resolve({
@@ -108,6 +109,7 @@ export default function App() {
                         <Route path="bookings" element={<BookingManagement />} />
                         <Route path="payments" element={<PaymentManagement />} />
                         <Route path="users" element={<UserManagement />} />
+                        <Route path="amenities" element={<AmenityBookingsPanel />} />
                         
                         {/* Settings routes */}
                         <Route path="settings" element={<SettingsLayout />}>

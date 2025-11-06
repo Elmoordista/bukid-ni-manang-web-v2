@@ -96,7 +96,7 @@ export function PaymentForm({ onSubmit, total, isProcessing = false }: PaymentFo
             <div className="rounded-lg bg-muted p-4">
               <h4 className="font-semibold mb-2">GCash Payment Instructions</h4>
               <ol className="list-decimal list-inside space-y-2 text-sm">
-                <li>Send payment to GCash number: 0917-123-4567</li>
+                <li>Send payment to GCash number: 09655866772</li>
                 <li>Save the reference number from your GCash transaction</li>
                 <li>Enter the reference number below</li>
               </ol>

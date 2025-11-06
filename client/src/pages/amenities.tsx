@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import ProtectedBookingForm from "@/components/amenity-booking/protected-booking-form";
 import { AMENITIES } from "@/lib/constants";
 import {
   Coffee,
@@ -13,7 +14,9 @@ import {
   Bus,
   Search,
   Filter,
-  X
+  X,
+  PartyPopper,
+  Pool as PoolIcon
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +35,13 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  PoolBookingForm,
+  RestaurantBookingForm,
+  EventsBookingForm,
+  ShuttleBookingForm,
+} from "@/components/amenity-booking";
 
 const iconMap = {
   coffee: Coffee,
@@ -47,9 +57,11 @@ const iconMap = {
 
 export default function AmenitiesPage() {
   const [selectedAmenity, setSelectedAmenity] = useState<typeof AMENITIES[0] | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [priceFilter, setPriceFilter] = useState("all");
   const [filteredAmenities, setFilteredAmenities] = useState(AMENITIES);
+  const [activeTab, setActiveTab] = useState("details");
 
   useEffect(() => {
     const filtered = AMENITIES.filter(amenity => {
@@ -131,7 +143,11 @@ export default function AmenitiesPage() {
               <Card 
                 key={index} 
                 className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                onClick={() => setSelectedAmenity(amenity)}
+                onClick={() => {
+                  setSelectedAmenity(amenity);
+                  setIsDialogOpen(true);
+                  setActiveTab("details");
+                }}
               >
                 <div className="aspect-video bg-muted relative overflow-hidden">
                   <div className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
@@ -170,55 +186,95 @@ export default function AmenitiesPage() {
         </div>
       </div>
 
-      <Dialog open={!!selectedAmenity} onOpenChange={() => setSelectedAmenity(null)}>
-        <DialogContent className="sm:max-w-[625px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center gap-3">
-              <span className="flex-1">{selectedAmenity?.name}</span>
-              {selectedAmenity?.icon && iconMap[selectedAmenity.icon as keyof typeof iconMap] && (
-                <div className="inline-block bg-primary/10 p-2 rounded-full">
-                  {(() => {
-                    const IconComponent = iconMap[selectedAmenity.icon as keyof typeof iconMap] || Coffee;
-                    return <IconComponent className="h-5 w-5 text-primary" />;
-                  })()}
+      <Dialog 
+        open={isDialogOpen} 
+        onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) {
+            setSelectedAmenity(null);
+            setActiveTab("details");
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+          {selectedAmenity && (
+            <DialogHeader>
+              <DialogTitle className="text-2xl flex items-center gap-3">
+                <span className="flex-1">{selectedAmenity.name}</span>
+                {selectedAmenity.icon && iconMap[selectedAmenity.icon as keyof typeof iconMap] && (
+                  <div className="inline-block bg-primary/10 p-2 rounded-full">
+                    {(() => {
+                      const IconComponent = iconMap[selectedAmenity.icon as keyof typeof iconMap] || Coffee;
+                      return <IconComponent className="h-5 w-5 text-primary" />;
+                    })()}
+                  </div>
+                )}
+              </DialogTitle>
+              <DialogDescription className="text-base mt-4">
+                {selectedAmenity.description}
+              </DialogDescription>
+            </DialogHeader>
+          )}
+
+          <div className="mt-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full" style={{ 
+              gridTemplateColumns: selectedAmenity?.isBookable ? '1fr 1fr' : '1fr'
+            }}>
+              <TabsTrigger value="details">Details</TabsTrigger>
+              {selectedAmenity?.isBookable && <TabsTrigger value="booking">Book Now</TabsTrigger>}
+            </TabsList>              <TabsContent value="details" className="space-y-6">
+                {/* Price Information */}
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">Pricing</h4>
+                  <div className="bg-muted p-3 rounded-lg">
+                    <p className="text-base">{selectedAmenity?.price}</p>
+                  </div>
                 </div>
-              )}
-            </DialogTitle>
-            <DialogDescription className="text-base mt-4">
-              {selectedAmenity?.description}
-            </DialogDescription>
-          </DialogHeader>
 
-          <div className="mt-6 space-y-6">
-            {/* Price Information */}
-            <div>
-              <h4 className="text-sm font-semibold mb-2">Pricing</h4>
-              <div className="bg-muted p-3 rounded-lg">
-                <p className="text-base">{selectedAmenity?.price}</p>
-              </div>
-            </div>
+                {/* Detailed Information */}
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">Details</h4>
+                  <div className="bg-muted p-3 rounded-lg">
+                    <p className="text-base">{selectedAmenity?.details}</p>
+                  </div>
+                </div>
 
-            {/* Detailed Information */}
-            <div>
-              <h4 className="text-sm font-semibold mb-2">Details</h4>
-              <div className="bg-muted p-3 rounded-lg">
-                <p className="text-base">{selectedAmenity?.details}</p>
-              </div>
-            </div>
+                {/* Guidelines */}
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">Guidelines</h4>
+                  <div className="bg-muted p-3 rounded-lg">
+                    <p className="text-base">{selectedAmenity?.guidelines}</p>
+                  </div>
+                </div>
+              </TabsContent>
 
-            {/* Guidelines */}
-            <div>
-              <h4 className="text-sm font-semibold mb-2">Guidelines</h4>
-              <div className="bg-muted p-3 rounded-lg">
-                <p className="text-base">{selectedAmenity?.guidelines}</p>
-              </div>
-            </div>
+              <TabsContent value="booking">
+                {selectedAmenity?.isBookable ? (
+                  <ProtectedBookingForm>
+                    {selectedAmenity?.name.toLowerCase().includes('pool') && <PoolBookingForm />}
+                    {selectedAmenity?.name.toLowerCase().includes('restaurant') && <RestaurantBookingForm />}
+                    {selectedAmenity?.name.toLowerCase().includes('event') && <EventsBookingForm />}
+                    {selectedAmenity?.name.toLowerCase().includes('shuttle') && <ShuttleBookingForm />}
+                  </ProtectedBookingForm>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">This amenity is not available for online booking.</p>
+                    <p className="text-sm text-muted-foreground mt-2">Please visit us in person or contact us for more information.</p>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
 
           <div className="mt-6 flex justify-end">
             <Button
               variant="secondary"
-              onClick={() => setSelectedAmenity(null)}
+              onClick={() => {
+                setIsDialogOpen(false);
+                setSelectedAmenity(null);
+                setActiveTab("details");
+              }}
             >
               Close
             </Button>

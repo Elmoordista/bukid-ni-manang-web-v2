@@ -16,7 +16,7 @@ import Notiflix from "notiflix";
 interface Payment {
   id: string;
   amount: number;
-  status: "pending" | "verified" | "failed" | "refunded";
+  status: "pending" | "verified" | "failed";
   customerName: string;
   reference: string;
   date: string;
@@ -188,7 +188,7 @@ export default function PaymentManagement() {
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="verified">Verified</SelectItem>
                   <SelectItem value="failed">Failed</SelectItem>
-                  <SelectItem value="refunded">Refunded</SelectItem>
+    
                 </SelectContent>
               </Select>
             </div>

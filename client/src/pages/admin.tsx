@@ -2,19 +2,24 @@ import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import AdminNavigation from "@/components/admin/admin-navigation";
-import AdminDashboard from "./admin/sections/dashboard";
-import RoomManagement from "./admin/sections/rooms";
-import BookingManagement from "./admin/sections/bookings";
-import PaymentManagement from "./admin/sections/payments";
-import UserManagement from "./admin/sections/users";
-import SettingsManagement from "./admin/sections/settings";
-import VenueSettings from "./admin/sections/venue";
-import { Routes, Route } from 'react-router-dom';
+import AmenityBookingsPanel from "@/components/admin/amenity-bookings";
 
 export default function Admin() {
   const { user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Dev bypass: allow viewing the amenities panel directly at /admin/amenities when running locally
+  if (import.meta.env.DEV && location.pathname.startsWith('/admin/amenities')) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AdminNavigation />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <AmenityBookingsPanel />
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (!loading && (!isAuthenticated || user?.role !== "admin")) {
@@ -46,20 +51,7 @@ export default function Admin() {
     <div className="min-h-screen bg-background">
       <AdminNavigation />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Routes>
-          <Route path="" element={<AdminDashboard />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="rooms" element={<RoomManagement />} />
-          <Route path="bookings" element={<BookingManagement />} />
-          <Route path="payments" element={<PaymentManagement />} />
-          <Route path="users" element={<UserManagement />} />
-          <Route path="settings">
-            <Route path="venue" element={<VenueSettings />} />
-            <Route path="general" element={<SettingsManagement />} />
-            <Route path="profile" element={<SettingsManagement />} />
-          </Route>
-          <Route path="*" element={<AdminDashboard />} />
-        </Routes>
+        <Outlet />
       </div>
     </div>
   );

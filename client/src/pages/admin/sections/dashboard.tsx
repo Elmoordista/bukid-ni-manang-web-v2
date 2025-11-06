@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Bed, CreditCard, Settings2 } from "lucide-react";
+import { Calendar, Bed, CreditCard, Settings2, Menu } from "lucide-react";
 import type { Booking } from "@/data/mockData";
 import { mockBookings } from "@/data/mockData";
 import { useAuth } from "@/context/auth-context";
@@ -103,10 +103,31 @@ export default function AdminDashboard() {
         <p className="text-lg text-muted-foreground">
           Here's what's happening at {RESORT_INFO.name} today
         </p>
+        <div className="mt-3">
+          <Button variant="outline" size="sm" onClick={() => navigate('/admin/amenities')}>
+            View Amenities Panel
+          </Button>
+        </div>
       </div>
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card 
+          className="hover:shadow-lg transition-shadow cursor-pointer" 
+          onClick={() => navigate('/admin/amenities')}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Amenities</CardTitle>
+            <Calendar className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Manage</div>
+            <div className="text-sm text-muted-foreground">
+              Pool & Other Amenity Bookings
+            </div>
+          </CardContent>
+        </Card>
+
         <Card 
           className="hover:shadow-lg transition-shadow cursor-pointer" 
           onClick={() => navigate('/admin/bookings')}

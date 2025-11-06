@@ -81,6 +81,14 @@ export default function AdminNavigation() {
       },
     },
     {
+      href: "/admin/amenities",
+      label: "Amenities",
+      icon: Menu,
+      description: "Manage amenity bookings & orders",
+      onClick: () => {},
+      shortcut: "Alt+A",
+    },
+    {
       href: "/admin/users",
       label: "Users",
       icon: Users,

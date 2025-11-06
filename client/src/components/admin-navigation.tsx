@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "@/components/auth-provider";
+import { useAuth } from "@/hooks/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -44,6 +44,13 @@ export default function AdminNavigation() {
               <Button variant="ghost" size="sm" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 <span>Payments</span>
+              </Button>
+            </Link>
+
+            <Link to="/admin/amenities">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4" />
+                <span>Amenities</span>
               </Button>
             </Link>
             
