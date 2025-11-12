@@ -176,10 +176,10 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
      try {
           await HttpClient.post("/front-end/book-room", data);
           toast({ title: "Booking Successful", description: "Your booking has been created successfully." });
-        } catch {
+        } catch (error) {
           toast({
             title: "Error",
-            description: "Failed to create booking.",
+            description: error.response?.data?.message || "Failed to create booking.",
             variant: "destructive",
           });
         }
