@@ -206,7 +206,11 @@ export default function RoomManagement() {
                 <Button
                   variant="outline"
                   disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  onClick={() => {
+                      setCurrentPage((p) => Math.max(1, p - 1))
+                      fetchRooms(currentPage - 1);
+                    }
+                  }
                 >
                   Previous
                 </Button>
@@ -216,8 +220,10 @@ export default function RoomManagement() {
                 <Button
                   variant="outline"
                   disabled={currentPage === totalPages}
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  onClick={() =>{
+                      setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      fetchRooms(currentPage + 1);
+                    }
                   }
                 >
                   Next
