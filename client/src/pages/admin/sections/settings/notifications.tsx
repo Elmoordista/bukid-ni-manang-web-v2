@@ -166,6 +166,7 @@ export default function NotificationSettings() {
     
 
   const handleSendTestEmail = async() =>{
+     Notiflix.Loading.circle('Sending test email...');
       try {
         await HttpClient.post('/settings/test-email', {
           toEmail: testEmail,
@@ -182,6 +183,8 @@ export default function NotificationSettings() {
           description: "There was an error sending the test email. Please try again.",
           variant: "destructive",
         });
+      } finally {
+        Notiflix.Loading.remove();
       }
   }
 
