@@ -36,7 +36,8 @@ const VirtualTour = React.lazy(() => import("./pages/virtual-tour-enhanced"));
 
 const Login = React.lazy(() => Promise.resolve({
   default: () => {
-    const LoginForm = React.lazy(() => import("@/components/auth/login-form"));
+    const LoginForm = React.lazy(() => import("./pages/login"));
+    // const LoginForm = React.lazy(() => import("@/components/auth/login-form"));
     return (
       <div className="container mx-auto py-10">
         <React.Suspense fallback={<LoadingFallback />}>

@@ -37,6 +37,8 @@ export default function RestaurantBookingForm() {
   const [activeCategory, setActiveCategory] = useState<string | null>(menuCategories[0]?.name || null);
   const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const { toast } = useToast();
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -96,38 +98,39 @@ export default function RestaurantBookingForm() {
       alert("No items selected");
       return;
     }
-    setIsSubmittingOrder(true);
-    try {
-      const orderItems = Object.entries(formData.selectedItems)
-        .filter(([, qty]) => qty > 0)
-        .map(([name, qty]) => {
-          // find price from menu data
-          let price = 0;
-          for (const cat of menuCategories) {
-            const it = cat.items.find(i => i.name === name);
-            if (it && (it as any).price) { price = (it as any).price; break; }
-          }
-          return { name, qty, price };
-        });
+    setIsDialogOpen(false);
+    // setIsSubmittingOrder(true);
+  //   try {
+  //     const orderItems = Object.entries(formData.selectedItems)
+  //       .filter(([, qty]) => qty > 0)
+  //       .map(([name, qty]) => {
+  //         // find price from menu data
+  //         let price = 0;
+  //         for (const cat of menuCategories) {
+  //           const it = cat.items.find(i => i.name === name);
+  //           if (it && (it as any).price) { price = (it as any).price; break; }
+  //         }
+  //         return { name, qty, price };
+  //       });
 
-      const payload = {
-        type: 'amenity-order',
-        items: orderItems,
-        total: computeTotal(),
-        createdAt: new Date().toISOString(),
-      };
+  //     const payload = {
+  //       type: 'amenity-order',
+  //       items: orderItems,
+  //       total: computeTotal(),
+  //       createdAt: new Date().toISOString(),
+  //     };
 
-  // POST to bookings/orders endpoint (backend expected to handle)
-  await HttpClient.post('/booking', payload);
-  toast({ title: 'Order submitted', description: 'Your advance order was submitted.' });
-  // clear selections
-  setFormData(prev => ({ ...prev, selectedItems: {} }));
-    } catch (e: any) {
-      console.error(e);
-  toast({ title: 'Order failed', description: 'Failed to submit advance order', variant: 'destructive' });
-    } finally {
-      setIsSubmittingOrder(false);
-    }
+  // // POST to bookings/orders endpoint (backend expected to handle)
+  // await HttpClient.post('/booking', payload);
+  // toast({ title: 'Order submitted', description: 'Your advance order was submitted.' });
+  // // clear selections
+  // setFormData(prev => ({ ...prev, selectedItems: {} }));
+  //   } catch (e: any) {
+  //     console.error(e);
+  // toast({ title: 'Order failed', description: 'Failed to submit advance order', variant: 'destructive' });
+  //   } finally {
+  //     setIsSubmittingOrder(false);
+  //   }
   };
 
   const submitBooking = async () => {
@@ -158,7 +161,7 @@ export default function RestaurantBookingForm() {
         total: computeTotal(),
       };
 
-  const response = await HttpClient.post('/booking', payload);
+  const response = await HttpClient.post('/front-end/book-amenities', payload);
   console.log('Booking created', response.data);
   toast({ title: 'Booking submitted', description: 'Your booking request was created.' });
   // optionally clear
@@ -308,9 +311,9 @@ export default function RestaurantBookingForm() {
 
           {/* Advance Order Button */}
           <div className="w-full">
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="w-full" variant="outline">
+                <Button className="w-full" variant="outline" onClick={()=>setIsDialogOpen(true)}>
                   <Menu className="w-4 h-4 mr-2" />
                   Browse & Add Order to Your Booking
                 </Button>
@@ -439,7 +442,7 @@ export default function RestaurantBookingForm() {
                     Total: <span className="text-primary">₱{computeTotal().toFixed(2)}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Button variant="outline" onClick={() => setFormData(prev => ({ ...prev, selectedItems: {} }))}>
+                    <Button variant="outline" onClick={() => {setFormData(prev => ({ ...prev, selectedItems: {} })); setIsDialogOpen(false);}}>
                       Cancel
                     </Button>
                     <Button className="bg-primary hover:bg-primary/90" disabled={!hasSelectedItems() || isSubmittingOrder} onClick={submitOrder}>

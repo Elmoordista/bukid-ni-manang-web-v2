@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
+import HttpClient from "@/lib/axiosInstance.ts";
 
 const signupSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -44,13 +45,21 @@ export default function Signup() {
   const onSubmit = async (data: SignupForm) => {
     setIsSubmitting(true);
     try {
-      await registerUser({
+      await HttpClient.post('/auth/register',{
         firstName: data.firstName,
         lastName: data.lastName,
+        name: `${data.firstName} ${data.lastName}`,
         email: data.email,
         password: data.password,
         role: "user",
       });
+      // await registerUser({
+      //   firstName: data.firstName,
+      //   lastName: data.lastName,
+      //   email: data.email,
+      //   password: data.password,
+      //   role: "user",
+      // });
 
       toast({
         title: "Registration Successful",

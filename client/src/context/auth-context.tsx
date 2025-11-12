@@ -9,6 +9,8 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockLogin, mockRegister, mockLogout, mockCheckAuth, initMockAuth } from "@/lib/mock-auth";
+import HttpClient from "@/lib/axiosInstance";
+import Notiflix from "notiflix";
 
 interface User {
   id: string;
@@ -93,7 +95,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async () => {
     try {
-      await mockLogout();
+      Notiflix.Loading.standard('Logging out...');
+      await HttpClient.post(`/auth/sign-out`, {});
+      Notiflix.Loading.remove();
+      // toast({ title: "Logout Successful", description: "You have been logged out." });
+      // await mockLogout();
+      localStorage.removeItem("current_user");
+      localStorage.removeItem("mock_users");
       setUser(null);
       setIsAuthenticated(false);
       navigate("/login");
