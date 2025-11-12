@@ -68,7 +68,7 @@ export default function RoomManagement() {
       const res = await HttpClient.get(`/rooms/get-rooms?page=${page}&pageSize=${pageSize}`);
       if(res.data){
         setRooms(res.data.data.data);
-        setTotalPages(res.data.data.total);
+        setTotalPages(res.data.data.last_page);
       }
     } catch (error) {
       toast({
