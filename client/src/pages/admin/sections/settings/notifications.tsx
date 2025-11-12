@@ -180,7 +180,7 @@ export default function NotificationSettings() {
       } catch (error) {
         toast({
           title: "Error",
-          description: "There was an error sending the test email. Please try again.",
+          description: error.response?.data?.message || "There was an error sending the test email. Please try again.",
           variant: "destructive",
         });
       } finally {
