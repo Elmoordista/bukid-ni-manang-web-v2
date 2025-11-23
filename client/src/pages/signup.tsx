@@ -178,7 +178,7 @@ export default function Signup() {
               onClick={() => navigate("/login")}
               data-testid="button-to-login"
             >
-              Sign in here
+              Log in here
             </Button>
           </p>
         </CardFooter>
