@@ -64,12 +64,12 @@ export default function Home() {
                   <span className="text-foreground">Lutong Bahay Restaurant</span>
                 </div>
               </div>
-              <Button 
+              {/* <Button 
                 onClick={() => setVirtualTourOpen(true)}
                 data-testid="button-open-virtual-tour"
               >
                 Take Virtual Tour
-              </Button>
+              </Button> */}
             </div>
             
             <div className="relative">
