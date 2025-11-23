@@ -94,7 +94,7 @@ export default function Signup() {
                 <Input
                   id="firstName"
                   {...registerField("firstName")}
-                  placeholder="John"
+                  placeholder="Input first name"
                   data-testid="input-first-name"
                 />
                 {errors.firstName && (
@@ -107,7 +107,7 @@ export default function Signup() {
                 <Input
                   id="lastName"
                   {...registerField("lastName")}
-                  placeholder="Doe"
+                  placeholder="Input last name"
                   data-testid="input-last-name"
                 />
                 {errors.lastName && (
@@ -122,7 +122,7 @@ export default function Signup() {
                 id="email"
                 type="email"
                 {...registerField("email")}
-                placeholder="john.doe@example.com"
+                placeholder="Input email address"
                 data-testid="input-email"
               />
               {errors.email && (
@@ -136,7 +136,7 @@ export default function Signup() {
                 id="password"
                 type="password"
                 {...registerField("password")}
-                placeholder="••••••••"
+                placeholder="Input password"
                 data-testid="input-password"
               />
               {errors.password && (
@@ -150,7 +150,7 @@ export default function Signup() {
                 id="confirmPassword"
                 type="password"
                 {...registerField("confirmPassword")}
-                placeholder="••••••••"
+                placeholder="Input confirm password"
                 data-testid="input-confirm-password"
               />
               {errors.confirmPassword && (
