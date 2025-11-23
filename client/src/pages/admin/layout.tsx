@@ -25,10 +25,11 @@ export default function AdminLayout() {
 
   const navItems = [
     { path: "/admin", icon: Home, label: "Dashboard" },
+    { path: "/admin/reports", icon: Hotel, label: "Reports" },
     { path: "/admin/rooms", icon: Hotel, label: "Rooms" },
     { path: "/admin/bookings", icon: Calendar, label: "Bookings" },
     { path: "/admin/payments", icon: CreditCard, label: "Payments" },
-    { path: "/admin/amenities", icon: Calendar, label: "Amenities" },
+    // { path: "/admin/amenities", icon: Calendar, label: "Amenities" },
     { path: "/admin/users", icon: Users, label: "Users" },
     { path: "/admin/settings", icon: Settings, label: "Settings" },
   ];

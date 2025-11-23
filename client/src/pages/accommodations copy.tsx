@@ -13,13 +13,13 @@ import HttpClient from "@/lib/axiosInstance.ts";
 
 export default function Accommodations() {
   const { isAuthenticated } = useAuth();
-  const parameters = new URLSearchParams(window.location.search);
   const navigate = useNavigate();
   const { toast } = useToast();
   
   const [selectedRoom, setSelectedRoom] = useState<Accommodation | null>(null);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [accommodations, setAccommodations] = useState([]);
+  // const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchParams, setSearchParams] = useState({
     checkIn: "",
@@ -27,16 +27,7 @@ export default function Accommodations() {
     guests: "1",
   });
 
-  console.log("Search Params:", searchParams);
-
-  // ⭐ Filter State
-  const [filters, setFilters] = useState({
-    minPrice: "",
-    maxPrice: "",
-    guests: parameters ? parameters.get("guests") || "" : "",
-    beds: parameters ? parameters.get("beds") || "" : "",
-  });
-
+  // Parse URL search params on mount and when auth state changes; load accommodations
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const checkIn = urlParams.get("checkIn") || "";
@@ -46,8 +37,11 @@ export default function Accommodations() {
 
     setSearchParams({ checkIn, checkOut, guests });
 
+    // Load accommodations data immediately
+    // setAccommodations(mockAccommodations);
     setIsLoading(false);
 
+    // If there's a booking intent in the URL and the user is authenticated, open the modal
     if (bookingId && isAuthenticated) {
       const roomToOpen = mockAccommodations.find((a) => a.id === bookingId);
       if (roomToOpen) {
@@ -80,14 +74,7 @@ export default function Accommodations() {
   const fetchRooms = async () => {
     setIsLoading(true)
     try {
-      const res = await HttpClient.get(`/front-end/get-rooms`,{
-        params: {
-          min_price: filters.minPrice,
-          max_price: filters.maxPrice,
-          guests: filters.guests,
-          beds: filters.beds,
-        }
-      });
+      const res = await HttpClient.get(`/front-end/get-rooms`);
       if(res.data){
         setAccommodations(res.data.data);
       }
@@ -102,9 +89,21 @@ export default function Accommodations() {
     }
   };
 
-
-  const handleSearch = () => {
-    fetchRooms();
+  if (false) { // Remove error handling for static data
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-16">
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <h1 className="text-2xl font-bold text-destructive mb-4">Failed to Load Accommodations</h1>
+              <p className="text-muted-foreground">
+                We're having trouble loading our room information. Please try again later.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -119,110 +118,16 @@ export default function Accommodations() {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               From cozy farm cottages to luxury suites, find the perfect accommodation for your getaway
             </p>
+            {searchParams.checkIn && searchParams.checkOut && (
+              <div className="mt-6 text-sm text-muted-foreground">
+                <p data-testid="text-search-params">
+                  Showing availability for {new Date(searchParams.checkIn).toLocaleDateString()} - {new Date(searchParams.checkOut).toLocaleDateString()} 
+                  for {searchParams.guests} guest{searchParams.guests !== "1" ? "s" : ""}
+                </p>
+              </div>
+            )}
           </div>
-
-          {/* ⭐ Filters Section */}
-      {/* ⭐ Filters Section */}
-      <div className="bg-white p-6 rounded-xl shadow-lg border border-muted/20 mb-10 ">
-        <h3 className="text-xl font-semibold mb-6 text-foreground flex items-center gap-2">
-          🔍 Filters
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-
-          {/* Min Price */}
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">
-              Min Price
-            </label>
-            <div className="mt-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-muted/10 focus-within:ring-2 focus-within:ring-primary/40 transition">
-              <span className="text-muted-foreground text-sm">₱</span>
-              <input
-                type="number"
-                className="w-full bg-transparent outline-none text-foreground"
-                placeholder="0"
-                value={filters.minPrice}
-                onChange={(e) =>
-                  setFilters({ ...filters, minPrice: e.target.value })
-                }
-              />
-            </div>
-          </div>
-
-          {/* Max Price */}
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">
-              Max Price
-            </label>
-            <div className="mt-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-muted/10 focus-within:ring-2 focus-within:ring-primary/40 transition">
-              <span className="text-muted-foreground text-sm">₱</span>
-              <input
-                type="number"
-                className="w-full bg-transparent outline-none text-foreground"
-                placeholder="5000"
-                value={filters.maxPrice}
-                onChange={(e) =>
-                  setFilters({ ...filters, maxPrice: e.target.value })
-                }
-              />
-            </div>
-          </div>
-
-          {/* Guests */}
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">
-              Guests
-            </label>
-            <div className="mt-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-muted/10 focus-within:ring-2 focus-within:ring-primary/40 transition">
-              <span className="text-muted-foreground text-sm">👤</span>
-              <input
-                type="number"
-                min="1"
-                className="w-full bg-transparent outline-none text-foreground"
-                placeholder="1"
-                value={filters.guests}
-                onChange={(e) =>
-                  setFilters({ ...filters, guests: e.target.value })
-                }
-              />
-            </div>
-          </div>
-
-          {/* Beds */}
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">
-              Beds
-            </label>
-            <div className="mt-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-muted/10 focus-within:ring-2 focus-within:ring-primary/40 transition">
-              <span className="text-muted-foreground text-sm">🛏️</span>
-              <input
-                type="number"
-                min="1"
-                className="w-full bg-transparent outline-none text-foreground"
-                placeholder="1"
-                value={filters.beds}
-                onChange={(e) =>
-                  setFilters({ ...filters, beds: e.target.value })
-                }
-              />
-            </div>
-          </div>
-
-          {/* Search Button */}
-          <div className="flex items-end">
-            <button
-              className="w-full py-3 rounded-lg bg-primary text-white font-medium shadow hover:bg-primary/90 
-              transition-all duration-200 hover:shadow-md"
-              onClick={handleSearch}
-            >
-              Search
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-
+          
           {/* Room Listings */}
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -241,7 +146,7 @@ export default function Accommodations() {
                 </Card>
               ))}
             </div>
-          ) : accommodations.length > 0 ? (
+          ) : accommodations && accommodations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {accommodations.map((room) => (
                 <RoomCard 
@@ -254,9 +159,9 @@ export default function Accommodations() {
           ) : (
             <Card>
               <CardContent className="pt-6 text-center">
-                <h2 className="text-xl font-semibold mb-4">No Accommodations Found</h2>
+                <h2 className="text-xl font-semibold mb-4">No Accommodations Available</h2>
                 <p className="text-muted-foreground">
-                  Try adjusting your filters to find a matching room.
+                  We currently don't have any rooms available. Please check back later.
                 </p>
               </CardContent>
             </Card>

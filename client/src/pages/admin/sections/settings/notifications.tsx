@@ -41,6 +41,7 @@ interface NotificationSettings {
     newBooking: NotificationEvent;
     bookingConfirmation: NotificationEvent;
     bookingCancellation: NotificationEvent;
+    bookingCheckOut: NotificationEvent;
     paymentReceived: NotificationEvent;
     checkInReminder: NotificationEvent & { daysBeforeCheckIn: number };
   };
@@ -96,6 +97,13 @@ export default function NotificationSettings() {
         sendSms: true,
         emailTemplate: "Dear {guest_name}, your booking has been cancelled...",
         smsTemplate: "Your booking has been cancelled",
+      },  
+      bookingCheckOut: {
+        enabled: true,
+        sendEmail: true,
+        sendSms: true,
+        emailTemplate: "Dear {guest_name}, your booking has been checked out...",
+        smsTemplate: "Your booking has been checked out",
       },
       paymentReceived: {
         enabled: true,

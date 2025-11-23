@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Calendar, Users, Mail, Phone, MessageSquare, XCircle, AlertTriangle, CreditCard } from "lucide-react";
+import { Calendar, Users, Mail, Phone, MessageSquare, XCircle, AlertTriangle, CreditCard, CheckCircle } from "lucide-react";
 import type { Booking } from "@/lib/types";
 import GCashPaymentForm from "./gcash-payment-form";
 import PaymentStatusDisplay from "./payment-status-display";
@@ -22,6 +22,7 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
   const { toast } = useToast();
   const { notifyBookingStatus } = useNotifications();
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const [isCheckOutDialogOpen, setIsCheckOutDialogOpen] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -77,6 +78,29 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
       setIsProcessing(false);
     }
   };
+  const handleCheckOutBooking = async () => {
+    setIsProcessing(true);
+    try {
+      const res = await HttpClient.post(`/front-end/check-out-booking`, { booking_id: booking.id });
+      if(res.data){
+       toast({
+          title: "Booking Checked Out",
+          description: "Your booking has been checked out successfully.",
+          variant: "success",
+        });
+        handleFetchBookings();
+        setIsCancelDialogOpen(false);
+      }
+    } catch (error: any) {
+      toast({
+        title: "Check Out Failed",
+        description: error.message || "Failed to check out booking. Please contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const getStatusBadge = (status: string | null) => {
     switch (status) {
@@ -105,6 +129,7 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
   };
 
   const canCancel = !booking.status || ['pending', 'confirmed'].includes(booking.status);
+  const canCheckOut = booking.status === 'confirmed' && new Date(booking.end_date) <= new Date();
   const canPay = booking.status === 'confirmed';
 
   return (
@@ -195,7 +220,6 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
             </p>
           </div>
         )}
-
         {canCancel && (
           <div className="pt-4 border-t">
             <Dialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
@@ -255,6 +279,52 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
                     disabled={isProcessing}
                   >
                     {isProcessing ? "Cancelling..." : "Cancel Booking"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )}
+        {canCheckOut && (
+          <div className="pt-4 border-t">
+            <Dialog open={isCheckOutDialogOpen} onOpenChange={setIsCheckOutDialogOpen}>
+              <DialogTrigger asChild>
+              <Button
+                variant="default"
+                size="sm"
+                disabled={isProcessing}
+                data-testid={`button-checkout-${booking.id}`}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Checkout Booking
+              </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2 text-orange-500" />
+                    Checkout Booking
+                  </DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to checkout from this booking? This action cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCheckOutDialogOpen(false)}
+                    disabled={isProcessing}
+                  >
+                    Keep Booking
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleCheckOutBooking}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? "Checking out..." : "Checkout Booking"}
                   </Button>
                 </DialogFooter>
               </DialogContent>

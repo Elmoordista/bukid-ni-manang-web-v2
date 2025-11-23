@@ -22,6 +22,7 @@ const AdminDashboard = React.lazy(() => import("./pages/admin/sections/dashboard
 const RoomManagement = React.lazy(() => import("./pages/admin/sections/rooms"));
 const BookingManagement = React.lazy(() => import("./pages/admin/sections/bookings"));
 const PaymentManagement = React.lazy(() => import("./pages/admin/sections/payments"));
+const ReportManagement = React.lazy(() => import("./pages/admin/sections/reports"));
 const UserManagement = React.lazy(() => import("./pages/admin/sections/users"));
 // Settings related imports
 const SettingsLayout = React.lazy(() => import("./pages/admin/sections/settings-layout"));
@@ -106,6 +107,7 @@ export default function App() {
                       }>
                         <Route index element={<AdminDashboard />} />
                         <Route path="dashboard" element={<AdminDashboard />} />
+                        <Route path="reports" element={<ReportManagement />} />
                         <Route path="rooms" element={<RoomManagement />} />
                         <Route path="bookings" element={<BookingManagement />} />
                         <Route path="payments" element={<PaymentManagement />} />

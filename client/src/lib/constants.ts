@@ -72,7 +72,7 @@ export const AMENITIES = [
     icon: "partyPopper",
     name: "Events Venue",
     description: "Host your special occasions in our versatile event spaces. Perfect for weddings, corporate events, and celebrations.",
-    price: "Starting at ₱25,000 for 6 hours",
+    price: "Starting at ₱15,000 for 6 hours",
     details: "Multiple venue options available. Can accommodate up to 300 guests. Full-service event planning available.",
     guidelines: "Booking required at least 2 weeks in advance | 50% down payment required to secure date | Customizable packages available",
     isBookable: true

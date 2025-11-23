@@ -19,16 +19,15 @@ export default function HeroSection() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [bookingData, setBookingData] = useState({
-    checkIn: "",
-    checkOut: "",
-    guests: "1 Guest",
+    guests: "1",
+    beds: "1",
   });
 
   const handleSearchAvailability = () => {
-    if (!bookingData.checkIn || !bookingData.checkOut) {
+    if ( !bookingData.guests || !bookingData.beds) {
       toast({
         title: "Missing Information",
-        description: "Please select check-in and check-out dates.",
+        description: "Please fill in all booking details.",
         variant: "destructive",
       });
       return;
@@ -36,11 +35,12 @@ export default function HeroSection() {
 
     toast({
       title: "Searching Availability",
-      description: "Finding the best rooms for your dates...",
+      description: "Searching for available accommodations at " + RESORT_INFO.name + "...",
     });
 
     // Navigate to accommodations with search params
-    navigate(`/accommodations?checkIn=${bookingData.checkIn}&checkOut=${bookingData.checkOut}&guests=${encodeURIComponent(bookingData.guests)}`);
+    navigate(`/accommodations?beds=${encodeURIComponent(bookingData.beds)}&guests=${encodeURIComponent(bookingData.guests)}`);
+    // navigate(`/accommodations?checkIn=${bookingData.checkIn}&checkOut=${bookingData.checkOut}&guests=${encodeURIComponent(bookingData.guests)}`);
   };
 
   return (
@@ -64,8 +64,8 @@ export default function HeroSection() {
         
         {/* Booking Widget */}
         <div className="booking-widget rounded-xl p-6 sm:p-8 border border-border/20 max-w-4xl mx-auto mt-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+            {/* <div className="space-y-2">
               <Label htmlFor="check-in" className="text-sm font-medium text-muted-foreground">Check-in</Label>
               <div className="relative">
                 <Input
@@ -93,11 +93,20 @@ export default function HeroSection() {
                 />
                 <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
               </div>
-            </div>
+            </div> */}
             
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">Guests</Label>
-              <Select
+              <Label className="text-sm font-medium text-muted-foreground">Beds</Label>
+              <Input
+                  id="beds"
+                  type="text"
+                  value={bookingData.beds}
+                  onChange={(e) => setBookingData({ ...bookingData, beds: e.target.value })}
+                  className="w-full text-center"
+                  placeholder="Input number of beds"
+                  data-testid="input-beds"
+              />
+              {/* <Select
                 value={bookingData.guests}
                 onValueChange={(value) => setBookingData({ ...bookingData, guests: value })}
               >
@@ -110,7 +119,33 @@ export default function HeroSection() {
                   <SelectItem value="3 Guests">3 Guests</SelectItem>
                   <SelectItem value="4+ Guests">4+ Guests</SelectItem>
                 </SelectContent>
-              </Select>
+              </Select> */}
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted-foreground">Guests</Label>
+              <Input
+                  id="guests"
+                  type="text"
+                  value={bookingData.guests}
+                  onChange={(e) => setBookingData({ ...bookingData, guests: e.target.value })}
+                  className="w-full text-center"
+                  placeholder="Input number of guests"
+                  data-testid="input-guests"
+              />
+              {/* <Select
+                value={bookingData.guests}
+                onValueChange={(value) => setBookingData({ ...bookingData, guests: value })}
+              >
+                <SelectTrigger data-testid="select-guests">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1 Guest">1 Guest</SelectItem>
+                  <SelectItem value="2 Guests">2 Guests</SelectItem>
+                  <SelectItem value="3 Guests">3 Guests</SelectItem>
+                  <SelectItem value="4+ Guests">4+ Guests</SelectItem>
+                </SelectContent>
+              </Select> */}
             </div>
             
             <Button 

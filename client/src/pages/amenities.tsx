@@ -218,12 +218,13 @@ export default function AmenitiesPage() {
 
           <div className="mt-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full" style={{ 
+            {/* <TabsList className="grid w-full" style={{ 
               gridTemplateColumns: selectedAmenity?.isBookable ? '1fr 1fr' : '1fr'
             }}>
               <TabsTrigger value="details">Details</TabsTrigger>
               {selectedAmenity?.isBookable && <TabsTrigger value="booking">Book Now</TabsTrigger>}
-            </TabsList>              <TabsContent value="details" className="space-y-6">
+            </TabsList>               */}
+              <TabsContent  value="details" className="space-y-6">
                 {/* Price Information */}
                 <div>
                   <h4 className="text-sm font-semibold mb-2">Pricing</h4>
