@@ -226,7 +226,7 @@ const handleChangeFilter = (value: string) => {
                 <TableBody>
                   {reports.length > 0 && reports.map((r) => (
                     <TableRow key={r.id}>
-                      <TableCell>{r.user?.first_name} {r.user?.last_name}</TableCell>
+                      <TableCell>{r.user?.name}</TableCell>
                       <TableCell>₱{r.total_price.toLocaleString()}</TableCell>
                       <TableCell>{r.start_date}</TableCell>
                       <TableCell>{r.end_date}</TableCell>
