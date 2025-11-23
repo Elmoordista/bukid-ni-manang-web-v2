@@ -110,7 +110,7 @@ export default function Home() {
           </div>
           
           <div className="bg-card rounded-2xl overflow-hidden shadow-2xl border border-border transform hover:scale-[1.02] transition-all duration-300">
-            <div className="relative aspect-video bg-muted group cursor-pointer" onClick={() => setVirtualTourOpen(true)}>
+            <div className="relative aspect-video bg-muted group cursor-pointer" >
               <img 
                 src={mainTourImage} 
                 alt="Resort main courtyard panoramic view" 
