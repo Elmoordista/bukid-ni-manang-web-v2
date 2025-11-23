@@ -120,14 +120,14 @@ export default function Home() {
               
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 flex items-center justify-center">
                 <div className="text-center text-white transform group-hover:-translate-y-2 transition-all duration-300">
-                  <Button
+                  {/* <Button
                     variant="ghost"
                     size="lg"
                     className="bg-primary/80 backdrop-blur-sm rounded-full p-8 hover:bg-primary/90 mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-primary/30"
                     data-testid="button-start-virtual-tour"
                   >
                     <Play className="h-14 w-14 text-white" />
-                  </Button>
+                  </Button> */}
                   <h3 className="text-2xl font-bold mb-3 drop-shadow-lg">Experience The Virtual Tour</h3>
                   <p className="text-lg text-white/90 max-w-md mx-auto">
                     Navigate through our stunning locations with intuitive 360° controls
