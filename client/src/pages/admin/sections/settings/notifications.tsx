@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Mail} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import Notiflix from "notiflix";
+// import Notiflix from "notiflix";
 import HttpClient from "@/lib/axiosInstance.ts";
 
 import {
@@ -128,7 +128,7 @@ export default function NotificationSettings() {
   }, []);
 
   const fetchSettings = async () =>{
-    Notiflix.Loading.circle('Loading settings...');
+    // Loading indicator handled by UI state
     try {
       // Replace with actual API call
       const response = await HttpClient.get('/settings?type=notifications');
@@ -146,11 +146,11 @@ export default function NotificationSettings() {
         variant: "destructive",
       });
     } finally {
-      Notiflix.Loading.remove();
+      // Notiflix.Loading.remove();
     }
   }
   const handleSave = async () =>{
-    Notiflix.Loading.circle('Saving settings...');
+    toast({ title: 'Saving settings...' });
     try {
       // Replace with actual API call
       await HttpClient.post('/settings', {
@@ -168,13 +168,13 @@ export default function NotificationSettings() {
         variant: "destructive",
       });
     } finally {
-      Notiflix.Loading.remove();
+      // Notiflix.Loading.remove();
     }
   }
     
 
   const handleSendTestEmail = async() =>{
-     Notiflix.Loading.circle('Sending test email...');
+     toast({ title: 'Sending test email...' });
       try {
         await HttpClient.post('/settings/test-email', {
           toEmail: testEmail,
@@ -192,7 +192,7 @@ export default function NotificationSettings() {
           variant: "destructive",
         });
       } finally {
-        Notiflix.Loading.remove();
+        toast({ title: 'Test email sent successfully!', variant: 'default' });
       }
   }
 
@@ -271,7 +271,7 @@ export default function NotificationSettings() {
               <CardTitle>Email Configuration</CardTitle>
               <Switch
                 checked={settings.email.enabled}
-                onCheckedChange={(checked) =>
+                onCheckedChange={(checked: boolean) =>
                   setSettings({
                     ...settings,
                     email: { ...settings.email, enabled: checked },
@@ -365,7 +365,7 @@ export default function NotificationSettings() {
               <Label>Use SSL</Label>
               <Switch
                 checked={settings.email.useSsl}
-                onCheckedChange={(checked) =>
+                onCheckedChange={(checked: boolean) =>
                   setSettings({
                     ...settings,
                     email: { ...settings.email, useSsl: checked },
@@ -518,7 +518,7 @@ function NotificationEventCard({
         </Label>
         <Switch
           checked={data.enabled}
-          onCheckedChange={(checked) => onChange({ ...data, enabled: checked })}
+          onCheckedChange={(checked: boolean) => onChange({ ...data, enabled: checked })}
         />
       </div>
 
@@ -526,7 +526,7 @@ function NotificationEventCard({
         <div className="space-y-4 mt-3">
           <Switch
             checked={data.sendEmail}
-            onCheckedChange={(checked) => onChange({ ...data, sendEmail: checked })}
+            onCheckedChange={(checked: boolean) => onChange({ ...data, sendEmail: checked })}
           />
           {data.sendEmail && (
             <Textarea

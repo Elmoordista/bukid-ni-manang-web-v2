@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
-import Notiflix from "notiflix";
+// import Notiflix from "notiflix";
 import HttpClient from "@/lib/axiosInstance.ts";
 import { useEffect } from "react";
 
@@ -54,7 +54,7 @@ export default function VenueSettings() {
   }, []);
 
   const fetchSettings = async () =>{
-    Notiflix.Loading.circle('Loading settings...');
+    // Loading settings...
     try {
       // Replace with actual API call
       const response = await HttpClient.get('/settings?type=venue');
@@ -72,12 +72,12 @@ export default function VenueSettings() {
         variant: "destructive",
       });
     } finally {
-      Notiflix.Loading.remove();
+      // Notiflix.Loading.remove();
     }
   }
 
   const onSubmit = async (data: VenueSettingsData) => {
-    Notiflix.Loading.circle('Saving settings...');
+    // Saving settings...
     try {
       // Replace with actual API call
       await HttpClient.post('/settings', {
@@ -95,7 +95,7 @@ export default function VenueSettings() {
         variant: "destructive",
       });
     } finally {
-      Notiflix.Loading.remove();
+      // Notiflix.Loading.remove();
     }
   };
 
