@@ -1,6 +1,6 @@
-import type { Accommodation } from '@shared/schema';
+// import type { Accommodation } from '@shared/schema';
 
-export const ACCOMMODATION_DATA: Partial<Accommodation>[] = [
+export const ACCOMMODATION_DATA: Partial<any>[] = [
   {
     name: "Deluxe Room",
     description: "Spacious and modern room with premium amenities, perfect for couples or small families.",

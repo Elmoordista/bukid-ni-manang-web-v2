@@ -29,12 +29,12 @@ export default function VirtualTour() {
         defaultZoomLvl: 50,
         minFov: 30,
         maxFov: 90,
-        defaultLat: 0,
-        defaultLong: 0,
+        // defaultLat: 0,
+        // defaultLong: 0,
         moveSpeed: 1.5,
         zoomSpeed: 1.5,
-        useXmpData: false,
-        preload: true,
+        // useXmpData: false,
+        // preload: true,
         requestHeaders: {
           'Cache-Control': 'max-age=3600'
         }

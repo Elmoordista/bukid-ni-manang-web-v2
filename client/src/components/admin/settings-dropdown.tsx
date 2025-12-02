@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Settings } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,8 +9,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function SettingsDropdown() {
-  const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
 
   return (
     <DropdownMenu>

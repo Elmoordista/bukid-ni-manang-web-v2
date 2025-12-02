@@ -45,7 +45,7 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock IntersectionObserver
 class IntersectionObserverMock {
-  constructor(callback: Function, options: Object) {}
+  constructor() {}
   disconnect() {}
   observe() {}
   unobserve() {}

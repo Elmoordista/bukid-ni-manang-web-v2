@@ -21,9 +21,8 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { addDays, format } from 'date-fns';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { addDays } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 
 const bookingFormSchema = z.object({
   startDate: z.date({
@@ -46,7 +45,7 @@ interface BookingCalendarProps {
   onBook: () => void;
 }
 
-export function BookingCalendar({ locationId, price, maxGuests = 4, onBook }: BookingCalendarProps) {
+export function BookingCalendar({ price, maxGuests = 4, onBook }: BookingCalendarProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({

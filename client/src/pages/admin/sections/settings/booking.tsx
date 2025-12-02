@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
-import { Clock, Calendar, Users } from "lucide-react";
+import { Clock} from "lucide-react";
 import Notiflix from "notiflix";
 import HttpClient from "@/lib/axiosInstance.ts";
 
@@ -134,6 +134,10 @@ export default function BookingSettings() {
     }
   };
 
+  const handleGetValue = (obj: any, key: string) => {
+    return obj[key as keyof typeof obj];
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -240,7 +244,8 @@ export default function BookingSettings() {
                 <Label>{label}</Label>
                 <Input
                   type="number"
-                  value={settings.booking_limits[key as keyof typeof settings.booking_limits]}
+                  value={handleGetValue(settings.booking_limits, key)}
+                  // value={settings.booking_limits[key as keyof typeof settings.booking_limits]}
                   onChange={(e) =>
                     setSettings({
                       ...settings,

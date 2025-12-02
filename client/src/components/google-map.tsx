@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Loader } from '@googlemaps/js-api-loader';
+// import { Loader } from '@googlemaps/js-api-loader';
 import { Card } from './ui/card';
 
 interface GoogleMapProps {
@@ -14,39 +14,44 @@ export default function GoogleMap({ apiKey, center, zoom = 15 }: GoogleMapProps)
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loader = new Loader({
-      apiKey,
-      version: "weekly",
-      libraries: ["places"]
-    });
+    // const loader = new Loader({
+    //   apiKey,
+    //   version: "weekly",
+    //   libraries: ["places"]
+    // });
+    let map = null;
+    // let map: google.maps.Map | null = null;
 
-    let map: google.maps.Map | null = null;
+    // loader.load().then(() => {
+    //   if (mapRef.current) {
+    //     map = new google.maps.Map(mapRef.current, {
+    //       center,
+    //       zoom,
+    //       mapTypeControl: true,
+    //       streetViewControl: true,
+    //       fullscreenControl: true,
+    //       zoomControl: true,
+    //     });
 
-    loader.load().then(() => {
-      if (mapRef.current) {
-        map = new google.maps.Map(mapRef.current, {
-          center,
-          zoom,
-          mapTypeControl: true,
-          streetViewControl: true,
-          fullscreenControl: true,
-          zoomControl: true,
-        });
+    //     // Add marker for the resort
+    //     new google.maps.Marker({
+    //       position: center,
+    //       map,
+    //       title: "Bukid ni Manang Farm & Resort"
+    //     });
 
-        // Add marker for the resort
-        new google.maps.Marker({
-          position: center,
-          map,
-          title: "Bukid ni Manang Farm & Resort"
-        });
+    //     setIsLoading(false);
+    //   }
+    // }).catch((error: any) => {
+    //   console.error("Error loading Google Maps:", error);
+    //   setLoadError("Failed to load Google Maps. Please try again later.");
+    //   setIsLoading(false);
+    // });
 
-        setIsLoading(false);
-      }
-    }).catch((error) => {
-      console.error("Error loading Google Maps:", error);
-      setLoadError("Failed to load Google Maps. Please try again later.");
-      setIsLoading(false);
-    });
+    useEffect(() => {
+      setIsLoading(true);
+      setLoadError(null);
+    }, []);
 
     return () => {
       // Cleanup if needed

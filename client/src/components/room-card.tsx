@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Users, Bed } from "lucide-react";
+import { Users, Bed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { type Accommodation } from "@/data/mockData";

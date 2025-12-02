@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/context/auth-context";
-import { Leaf, UserPlus, Shield, Eye, EyeOff } from "lucide-react";
+// import { useAuth } from "@/context/auth-context";
+import { Leaf, Eye, EyeOff } from "lucide-react";
 
 const registerSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -49,9 +49,9 @@ export default function Register() {
     setIsSubmitting(true);
     
     try {
-      const { confirmPassword, ...userData } = data;
-      
-      await register(userData);
+      const { confirmPassword} = data;
+      console.log(confirmPassword)
+      // await register(userData);
       
       toast({
         title: "Registration Successful",

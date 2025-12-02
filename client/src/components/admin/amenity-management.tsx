@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { AMENITIES } from '@/lib/constants';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
@@ -42,15 +40,15 @@ export default function AmenityManagement() {
   };
 
   const handleAdd = () => {
-    const newAmenity: Amenity = {
-      icon: "plus",
-      name: "New Amenity",
-      description: "Description",
-      price: "₱0",
-      details: "Details"
-    };
-    setAmenities([...amenities, newAmenity]);
-    handleEdit(newAmenity);
+    // const newAmenity: Amenity = {
+    //   icon: "plus",
+    //   name: "New Amenity",
+    //   description: "Description",
+    //   price: "₱0",
+    //   details: "Details"
+    // };
+    // setAmenities([...amenities, newAmenity]);
+    // handleEdit(newAmenity);
   };
 
   return (

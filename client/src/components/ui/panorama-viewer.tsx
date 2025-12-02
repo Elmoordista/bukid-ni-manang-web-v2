@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Button } from './ui/button';
-import { Dialog } from './ui/dialog';
-import { Card } from './ui/card';
-import { Badge } from './ui/badge';
-import { CalendarIcon, Info, MapPin, Users } from 'lucide-react';
-import { BookingCalendar } from './booking-calendar';
+import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {  Info,Users } from 'lucide-react';
+// import { BookingCalendar } from './booking-calendar';
 import { cn } from '@/lib/utils';
 
 interface PanoramaViewerProps {
@@ -245,12 +245,12 @@ export function PanoramaViewer({
         <Dialog open={showBooking} onOpenChange={setShowBooking}>
           <Card className="p-6 max-w-2xl mx-auto">
             <h2 className="text-2xl font-semibold mb-4">Book {locationName}</h2>
-            <BookingCalendar 
+            {/* <BookingCalendar 
               locationId={locationName} 
               price={price} 
               maxGuests={maxGuests}
               onBook={onBook}
-            />
+            /> */}
           </Card>
         </Dialog>
       )}

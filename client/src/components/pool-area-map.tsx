@@ -1,18 +1,33 @@
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
-import { POOL_OVERVIEW_IMAGE, POOL_LOCATIONS } from '@/lib/virtual-tour-data';
+// import { POOL_OVERVIEW_IMAGE, POOL_LOCATIONS } from '@/lib/virtual-tour-data';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+// import Image from 'next/image';
+// import { any } from 'zod';
 
 export interface PoolAreaMapProps {
   onLocationSelect?: (locationId: string) => void;
 }
 
 export function PoolAreaMap({ onLocationSelect }: PoolAreaMapProps) {
-  const [selectedLocation, setSelectedLocation] = useState<typeof POOL_LOCATIONS[0] | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleLocationClick = (location: typeof POOL_LOCATIONS[0]) => {
+  // const POOL_OVERVIEW_IMAGE = '/images/pool-overview.jpg';
+  const POOL_LOCATIONS = [
+    {
+      id: 'location1',
+      name: 'Main Pool',
+      description: 'The main swimming pool area with lounge chairs and umbrellas.',
+      coordinates: { x: 400, y: 300 },
+      thumbnail: '/images/pool-main.jpg',
+      panoramaUrl: 'https://example.com/panorama/main-pool',
+    },
+  ];
+  // const [POOL_LOCATIONS, setPoolLocations] = useState<any>(null);
+  // const [POOL_LOCATIONS, setPoolLocations] = useState<any>(null);
+
+  const handleLocationClick = (location: any) => {
     setSelectedLocation(location);
     setDialogOpen(true);
     onLocationSelect?.(location.id);
@@ -21,16 +36,16 @@ export function PoolAreaMap({ onLocationSelect }: PoolAreaMapProps) {
   return (
     <div className="relative w-full aspect-[16/9] bg-muted rounded-lg overflow-hidden">
       {/* Main overview image */}
-      <Image
-        src={POOL_OVERVIEW_IMAGE}
+      {/* <Image
+        src={POOL_OVERVIEW_IMAGE ? POOL_OVERVIEW_IMAGE : '/images/pool-overview-placeholder.jpg'}
         alt="Pool Area Overview"
         width={1600}
         height={900}
         className="object-cover"
-      />
+      /> */}
 
       {/* Clickable location markers */}
-      {POOL_LOCATIONS.map((location) => (
+      {POOL_LOCATIONS?.map((location: any) => (
         <button
           key={location.id}
           onClick={() => handleLocationClick(location)}
@@ -67,7 +82,7 @@ export function PoolAreaMap({ onLocationSelect }: PoolAreaMapProps) {
               <h2 className="text-2xl font-semibold mb-4">{selectedLocation.name}</h2>
               <p className="text-muted-foreground mb-4">{selectedLocation.description}</p>
               
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <Image
                   src={selectedLocation.thumbnail}
                   alt={selectedLocation.name}
@@ -75,7 +90,7 @@ export function PoolAreaMap({ onLocationSelect }: PoolAreaMapProps) {
                   height={450}
                   className="rounded-lg"
                 />
-              </div>
+              </div> */}
 
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>

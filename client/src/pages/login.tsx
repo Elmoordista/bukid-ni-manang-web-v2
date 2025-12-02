@@ -66,7 +66,7 @@ export default function Login() {
         }
       }
        
-      } catch (error) {
+      } catch (error : any) {
          toast({
           title: "Login Failed",
           description: error.message || "Invalid email or password.",

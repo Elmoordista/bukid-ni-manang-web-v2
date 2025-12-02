@@ -14,7 +14,6 @@ import {
   Users, 
   CreditCard, 
   HelpCircle, 
-  Phone, 
   Mail,
   CheckCircle,
   XCircle,

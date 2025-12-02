@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Clock, MinusCircle, PlusCircle, Utensils, Menu } from "lucide-react";
+import { Calendar, MinusCircle, PlusCircle, Utensils, Menu } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   Select,
@@ -99,7 +99,7 @@ export default function RestaurantBookingForm() {
       return;
     }
     setIsDialogOpen(false);
-    // setIsSubmittingOrder(true);
+    setIsSubmittingOrder(true);
   //   try {
   //     const orderItems = Object.entries(formData.selectedItems)
   //       .filter(([, qty]) => qty > 0)
@@ -164,8 +164,8 @@ export default function RestaurantBookingForm() {
   const response = await HttpClient.post('/front-end/book-amenities', payload);
   console.log('Booking created', response.data);
   toast({ title: 'Booking submitted', description: 'Your booking request was created.' });
-  // optionally clear
-  setFormData({ date: '', time: '', guests: 2, specialRequests: '', selectedItems: {} });
+  // // optionally clear
+  // setFormData({ date: '', time: '', guests: 2, specialRequests: '', selectedItems: {} });
     } catch (e: any) {
       console.error(e);
   toast({ title: 'Booking failed', description: 'Failed to submit booking', variant: 'destructive' });
@@ -326,7 +326,7 @@ export default function RestaurantBookingForm() {
               {/* Category Navigation */}
               <div className="w-full py-3 border-b category-nav-wrapper sticky top-0 z-30 bg-background">
                 <div className="flex flex-wrap gap-2 px-2 category-nav">
-                    {menuCategories.map((category, index) => (
+                    {menuCategories.map((category) => (
                       <button
                         key={category.name}
                         aria-pressed={activeCategory === category.name}
@@ -503,9 +503,9 @@ export default function RestaurantBookingForm() {
   );
 }
 
-function groupBy(array: any[], key: string) {
-  return array.reduce((result, item) => {
-    (result[item[key]] = result[item[key]] || []).push(item);
-    return result;
-  }, {});
-}
+// function groupBy(array: any[], key: string) {
+//   return array.reduce((result, item) => {
+//     (result[item[key]] = result[item[key]] || []).push(item);
+//     return result;
+//   }, {});
+// }

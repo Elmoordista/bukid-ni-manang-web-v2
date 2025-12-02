@@ -9,12 +9,12 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || user?.role !== "admin")) {
+    if (!loading && (!isAuthenticated || user?.role !== "admin")) {
       toast({
         title: "Unauthorized",
         description: "Admin access required.",
@@ -22,9 +22,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       });
       navigate("/login");
     }
-  }, [isAuthenticated, isLoading, user, navigate, toast]);
+  }, [isAuthenticated, loading, user, navigate, toast]);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

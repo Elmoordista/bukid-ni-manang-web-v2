@@ -1,7 +1,5 @@
-"use client";
-
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";   // <-- FIX
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import AdminProtectedRoute from "@/components/admin/admin-protected-route";
@@ -10,23 +8,23 @@ import Navigation from "@/components/navigation";
 
 export default function AdminPage() {
   const { user, loading } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();     // <-- FIX
   const { toast } = useToast();
 
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        router.push("/login");
+        navigate("/login");           // <-- FIX
       } else if (user.role !== "admin") {
         toast({
           title: "Unauthorized",
           description: "This page is only accessible to administrators.",
           variant: "destructive",
         });
-        router.push("/");
+        navigate("/");                // <-- FIX
       }
     }
-  }, [user, loading, router, toast]);
+  }, [user, loading, navigate, toast]);
 
   if (loading) {
     return (
@@ -44,13 +42,11 @@ export default function AdminPage() {
   }
 
   return (
-    <>
-      <AdminProtectedRoute>
-        <div className="min-h-screen bg-background">
-          <Navigation adminMode />
-          <Admin />
-        </div>
-      </AdminProtectedRoute>
-    </>
+    <AdminProtectedRoute>
+      <div className="min-h-screen bg-background">
+        <Navigation adminMode />
+        <Admin />
+      </div>
+    </AdminProtectedRoute>
   );
 }

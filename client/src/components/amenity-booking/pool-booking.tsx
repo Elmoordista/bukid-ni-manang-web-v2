@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import HttpClient from "@/lib/axiosInstance";
 
@@ -62,10 +61,11 @@ export default function PoolBookingForm() {
   };
 
   const adjustCount = (field: string, increment: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: increment ? prev[field] + 1 : Math.max(0, prev[field] - 1)
-    }));
+    console.log(`Adjusting ${field} ${increment ? 'up' : 'down'}`);
+    // setFormData(prev => ({
+    //   ...prev,
+    //   [field]: increment ? prev[field] + 1 : Math.max(0, prev[field] - 1)
+    // }));
   };
 
   return (
@@ -283,7 +283,7 @@ export default function PoolBookingForm() {
                   total: calculateTotal(),
                 };
                 
-                const response = await HttpClient.post('/booking', bookingData);
+                await HttpClient.post('/booking', bookingData);
                 toast({
                   title: "Booking Successful",
                   description: "Your pool booking has been confirmed.",

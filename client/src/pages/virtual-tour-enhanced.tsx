@@ -65,27 +65,27 @@ export default function VirtualTour() {
           defaultPitch: 0,
           moveSpeed: 1.5,
           zoomSpeed: 1.5,
-          preload: true,
-          loadingImg: null,
+          // preload: true,
+          // loadingImg: null,
           requestHeaders: {
             'Cache-Control': 'max-age=3600'
           },
           fisheye: false,
-          markers: VIRTUAL_TOUR_LOCATIONS[selectedLocation].hotspots.map(hotspot => ({
-            id: hotspot.id,
-            position: { yaw: hotspot.yaw, pitch: hotspot.pitch },
-            html: hotspot.type === 'location-marker' 
-              ? `<div class="psv-marker psv-marker--fixed psv-location-marker"></div>` 
-              : `<div class="psv-marker psv-marker--fixed psv-hotspot-arrow bg-black/60 text-white">${hotspot.label}</div>`,
-            tooltip: hotspot.label,
-            width: hotspot.type === 'location-marker' ? 16 : 32,
-            height: hotspot.type === 'location-marker' ? 16 : 32,
-            anchor: 'center center',
-            style: {
-              cursor: 'pointer',
-              pointerEvents: 'auto'
-            }
-          }))
+          // markers: VIRTUAL_TOUR_LOCATIONS[selectedLocation].hotspots.map((hotspot: any) => ({
+          //   id: hotspot.id,
+          //   position: { yaw: hotspot.yaw, pitch: hotspot.pitch },
+          //   html: hotspot.type === 'location-marker' 
+          //     ? `<div class="psv-marker psv-marker--fixed psv-location-marker"></div>` 
+          //     : `<div class="psv-marker psv-marker--fixed psv-hotspot-arrow bg-black/60 text-white">${hotspot.label}</div>`,
+          //   tooltip: hotspot.label,
+          //   width: hotspot.type === 'location-marker' ? 16 : 32,
+          //   height: hotspot.type === 'location-marker' ? 16 : 32,
+          //   anchor: 'center center',
+          //   style: {
+          //     cursor: 'pointer',
+          //     pointerEvents: 'auto'
+          //   }
+          // }))
         });
 
         viewerRef.current = viewer;        // Add loading handlers
@@ -122,12 +122,14 @@ export default function VirtualTour() {
   useEffect(() => {
     if (viewerRef.current) {
       try {
+        console.log(isLoading)
         setIsLoading(true);
         const location = VIRTUAL_TOUR_LOCATIONS[selectedLocation];
 
         // Show preview image first
         const previewImg = document.createElement('img');
-        previewImg.src = location.previewImage;
+        // previewImg.src = location.previewImage;
+        previewImg.src = location.image;
         previewImg.onload = () => {
           if (viewerRef.current) {
             viewerRef.current.setPanorama(location.image, {

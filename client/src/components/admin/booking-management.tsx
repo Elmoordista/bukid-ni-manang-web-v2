@@ -10,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useNotifications } from "@/hooks/use-notifications";
-import { mockBookings } from "@/data/mockData";
 import type { Booking } from "@/data/mockData";
 
 import HttpClient from "@/lib/axiosInstance.ts";
@@ -28,7 +26,6 @@ function BookingActionDialog({ booking, isOpen, onClose, action, handleUpdateBoo
   const [notes, setNotes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
-  const { notifyBookingStatus } = useNotifications();
 
   const handleAction = async () => {
     setIsProcessing(true);
@@ -66,7 +63,7 @@ function BookingActionDialog({ booking, isOpen, onClose, action, handleUpdateBoo
         description: `Successfully ${status} booking for ${booking.guestName}`,
       });
 
-      handleUpdateBooking(booking.id, status, notes);
+      handleUpdateBooking(parseInt(booking.id), status, notes);
 
       onClose();
     } catch (error: any) {
@@ -183,10 +180,11 @@ function BookingActionDialog({ booking, isOpen, onClose, action, handleUpdateBoo
 }
 
 interface BookingManagementProps {
+  booking: Booking;
   handleUpdateBooking: (bookingId: number, status: string, notes: string) => void;
 }
 
-export default function BookingManagement({ booking , handleUpdateBooking }: BookingManagementProps) {
+export default function BookingManagement({ booking  , handleUpdateBooking }: BookingManagementProps) {
 // export default function BookingManagement({ booking }: { booking: Booking }, { handleUpdateBooking }: BookingManagementProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isRejectOpen, setIsRejectOpen] = useState(false);

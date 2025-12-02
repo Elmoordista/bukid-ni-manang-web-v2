@@ -121,62 +121,64 @@ export type Hotspot = {
   label?: string;
 };
 
-export type { Hotspot };
+// export type { Hotspot };
 export { VIRTUAL_TOUR_LOCATIONS } from './virtual-tour-data';
 
 // Original tour locations array removed and moved to virtual-tour-data.ts
-const _VIRTUAL_TOUR_LOCATIONS_OLD = [
-  {
-    id: "main-entrance",
-    name: "Main Entrance & Welcome Area",
-    image: "/attached_assets/IMG_9890_1759418259559.jpeg",
-    hotspots: [
-      { id: 'h-main-1', targetId: 'water-park', yaw: 30, pitch: 0, label: 'Water Park', screenX: 65, screenY: 48 },
-      { id: 'h-main-2', targetId: 'resort-grounds', yaw: -60, pitch: 0, label: 'Resort Grounds', screenX: 28, screenY: 52 },
-    ] as (Hotspot & { screenX?: number; screenY?: number })[],
-  },
-  {
-    id: "water-park",
-    name: "Water Park & Pool Area",
-    image: "/attached_assets/IMG_9196_1756782230937.jpeg",
-    hotspots: [
-      { id: 'h-water-1', targetId: 'main-entrance', yaw: 210, pitch: 0, label: 'Main Entrance', screenX: 50, screenY: 60 },
-      { id: 'h-water-2', targetId: 'restaurant', yaw: 120, pitch: 0, label: 'Restaurant', screenX: 75, screenY: 55 }
-    ],
-  },
-  {
-    id: "restaurant",
-    name: "Lutong Bahay Restaurant",
-    image: "/attached_assets/IMG_9193_1756782230937.jpeg",
-    hotspots: [
-      { id: 'h-rest-1', targetId: 'water-park', yaw: 160, pitch: 0, label: 'Pool Area', screenX: 55, screenY: 50 },
-      { id: 'h-rest-2', targetId: 'hotel-rooms', yaw: -120, pitch: 0, label: 'Accommodations', screenX: 35, screenY: 45 }
-    ]
-  },
-  {
-    id: "hotel-rooms",
-    name: "Hotel Rooms & Accommodations",
-    image: "/attached_assets/IMG_9191_1756782230937.jpeg",
-    hotspots: [
-      { id: 'h-room-1', targetId: 'restaurant', yaw: 180, pitch: 0, label: 'Restaurant', screenX: 45, screenY: 50 },
-      { id: 'h-room-2', targetId: 'resort-grounds', yaw: 90, pitch: 0, label: 'Gardens', screenX: 65, screenY: 48 }
-    ]
-  },
-  {
-    id: "resort-grounds",
-    name: "Resort Grounds & Gardens",
-    image: "/attached_assets/IMG_9195_1756782230937.jpeg",
-    hotspots: [
-      { id: 'h-garden-1', targetId: 'main-entrance', yaw: 150, pitch: 0, label: 'Main Entrance', screenX: 60, screenY: 45 },
-      { id: 'h-garden-2', targetId: 'hotel-rooms', yaw: -120, pitch: 0, label: 'Accommodations', screenX: 35, screenY: 50 }
-    ]
-  },
-  {
-    id: "hilltop-view",
-    name: "Hilltop View & Relaxation Area",
-    image: "/attached_assets/IMG_9197_1756782230937.jpeg",
-    hotspots: [
-      { id: 'h-hill-1', targetId: 'resort-grounds', yaw: 180, pitch: 0, label: 'Gardens', screenX: 50, screenY: 55 }
-    ]
-  }
-];
+// const _VIRTUAL_TOUR_LOCATIONS_OLD = [
+//   {
+//     id: "main-entrance",
+//     name: "Main Entrance & Welcome Area",
+//     image: "/attached_assets/IMG_9890_1759418259559.jpeg",
+//     hotspots: [
+//       { id: 'h-main-1', targetId: 'water-park', yaw: 30, pitch: 0, label: 'Water Park', screenX: 65, screenY: 48 },
+//       { id: 'h-main-2', targetId: 'resort-grounds', yaw: -60, pitch: 0, label: 'Resort Grounds', screenX: 28, screenY: 52 },
+//     ] as (Hotspot & { screenX?: number; screenY?: number })[],
+//   },
+//   {
+//     id: "water-park",
+//     name: "Water Park & Pool Area",
+//     image: "/attached_assets/IMG_9196_1756782230937.jpeg",
+//     hotspots: [
+//       { id: 'h-water-1', targetId: 'main-entrance', yaw: 210, pitch: 0, label: 'Main Entrance', screenX: 50, screenY: 60 },
+//       { id: 'h-water-2', targetId: 'restaurant', yaw: 120, pitch: 0, label: 'Restaurant', screenX: 75, screenY: 55 }
+//     ],
+//   },
+//   {
+//     id: "restaurant",
+//     name: "Lutong Bahay Restaurant",
+//     image: "/attached_assets/IMG_9193_1756782230937.jpeg",
+//     hotspots: [
+//       { id: 'h-rest-1', targetId: 'water-park', yaw: 160, pitch: 0, label: 'Pool Area', screenX: 55, screenY: 50 },
+//       { id: 'h-rest-2', targetId: 'hotel-rooms', yaw: -120, pitch: 0, label: 'Accommodations', screenX: 35, screenY: 45 }
+//     ]
+//   },
+//   {
+//     id: "hotel-rooms",
+//     name: "Hotel Rooms & Accommodations",
+//     image: "/attached_assets/IMG_9191_1756782230937.jpeg",
+//     hotspots: [
+//       { id: 'h-room-1', targetId: 'restaurant', yaw: 180, pitch: 0, label: 'Restaurant', screenX: 45, screenY: 50 },
+//       { id: 'h-room-2', targetId: 'resort-grounds', yaw: 90, pitch: 0, label: 'Gardens', screenX: 65, screenY: 48 }
+//     ]
+//   },
+//   {
+//     id: "resort-grounds",
+//     name: "Resort Grounds & Gardens",
+//     image: "/attached_assets/IMG_9195_1756782230937.jpeg",
+//     hotspots: [
+//       { id: 'h-garden-1', targetId: 'main-entrance', yaw: 150, pitch: 0, label: 'Main Entrance', screenX: 60, screenY: 45 },
+//       { id: 'h-garden-2', targetId: 'hotel-rooms', yaw: -120, pitch: 0, label: 'Accommodations', screenX: 35, screenY: 50 }
+//     ]
+//   },
+//   {
+//     id: "hilltop-view",
+//     name: "Hilltop View & Relaxation Area",
+//     image: "/attached_assets/IMG_9197_1756782230937.jpeg",
+//     hotspots: [
+//       { id: 'h-hill-1', targetId: 'resort-grounds', yaw: 180, pitch: 0, label: 'Gardens', screenX: 50, screenY: 55 }
+//     ]
+//   }
+// ];
+
+// const __VIRTUAL_TOUR_LOCATIONS_OLD = [];

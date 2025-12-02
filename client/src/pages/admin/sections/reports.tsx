@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Search, Filter, Download, Eye } from "lucide-react";
+import { Search, Filter, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Notiflix from "notiflix";
 
@@ -27,12 +27,12 @@ interface Payment {
 
 export default function PaymentManagement() {
   const { toast } = useToast();
-  const [reports, setreports] = useState([]);
+  const [reports, setreports] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [downloading, setDownloading] = useState(false);
+  // const [downloading, setDownloading] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
@@ -42,6 +42,7 @@ export default function PaymentManagement() {
   // 🕓 Debounce search input
 
   useEffect(() => {
+    setSelectedPayment(selectedPayment)
     const delay = setTimeout(() => {
       getReports();
     }, 800);
@@ -72,7 +73,7 @@ export default function PaymentManagement() {
   const handleUpdateStatus = async (paymentId: string, newStatus: Payment["status"]) => {
      try {
       setLoading(true);
-        const response = await HttpClient.put("/payment/" + paymentId,{
+        await HttpClient.put("/payment/" + paymentId,{
           status: newStatus
         });
         toast({
@@ -100,17 +101,17 @@ export default function PaymentManagement() {
   //     description: `Payment ${paymentId} has been marked as ${newStatus}.`,
   //   });
   // };
-  const handleDownloadReceipt = (payment: Payment) => {
-    toast({
-      title: "Receipt Downloaded",
-      description: `Receipt for payment ${payment.reference} has been downloaded.`,
-    });
-  };
+  // const handleDownloadReceipt = (payment: Payment) => {
+  //   toast({
+  //     title: "Receipt Downloaded",
+  //     description: `Receipt for payment ${payment.reference} has been downloaded.`,
+  //   });
+  // };
 
-  const totalAmount = reports.reduce(
-    (sum, p) => (p.status === "done" ? sum + p.total_price : sum),
-  0
-  );
+  // const totalAmount = reports.reduce(
+  //   (sum, p) => (p.status === "done" ? sum + p.total_price : sum),
+  // 0
+  // );
 
   const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -224,7 +225,7 @@ const handleChangeFilter = (value: string) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reports.length > 0 && reports.map((r) => (
+                  {reports.length > 0 && reports.map((r:any) => (
                     <TableRow key={r.id}>
                       <TableCell>{r.user?.name}</TableCell>
                       <TableCell>₱{r.total_price.toLocaleString()}</TableCell>

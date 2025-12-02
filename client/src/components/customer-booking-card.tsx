@@ -4,26 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useNotifications } from "@/hooks/use-notifications";
-import { Calendar, Users, Mail, Phone, MessageSquare, XCircle, AlertTriangle, CreditCard, CheckCircle } from "lucide-react";
-import type { Booking } from "@/lib/types";
-import GCashPaymentForm from "./gcash-payment-form";
-import PaymentStatusDisplay from "./payment-status-display";
+import { Calendar, Users, Mail, Phone, MessageSquare, XCircle, AlertTriangle, CheckCircle } from "lucide-react";
+// import type { Booking } from "@/lib/types";
 
 import HttpClient from "@/lib/axiosInstance.ts";
 
 interface CustomerBookingCardProps {
-  booking: Booking;
+  booking: any;
   accommodationName?: string;
   handleFetchBookings?: () => void;
 }
 
 export default function CustomerBookingCard({ booking, accommodationName, handleFetchBookings }: CustomerBookingCardProps) {
   const { toast } = useToast();
-  const { notifyBookingStatus } = useNotifications();
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [isCheckOutDialogOpen, setIsCheckOutDialogOpen] = useState(false);
-  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // const handleCancelBooking = async () => {
@@ -63,9 +58,8 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
        toast({
           title: "Booking Cancelled",
           description: "Your booking has been cancelled successfully.",
-          variant: "success",
         });
-        handleFetchBookings();
+        handleFetchBookings?.();
         setIsCancelDialogOpen(false);
       }
     } catch (error: any) {
@@ -86,9 +80,8 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
        toast({
           title: "Booking Checked Out",
           description: "Your booking has been checked out successfully.",
-          variant: "success",
         });
-        handleFetchBookings();
+        handleFetchBookings?.();
         setIsCancelDialogOpen(false);
       }
     } catch (error: any) {
@@ -130,7 +123,7 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
 
   const canCancel = !booking.status || ['pending', 'confirmed'].includes(booking.status);
   const canCheckOut = booking.status === 'confirmed' && new Date(booking.end_date) <= new Date();
-  const canPay = booking.status === 'confirmed';
+  // const canPay = booking.status === 'confirmed';
 
   return (
     <Card className="glass-effect border-0 shadow-lg">
@@ -189,7 +182,7 @@ export default function CustomerBookingCard({ booking, accommodationName, handle
             <div className="text-sm">
               <span className="font-medium">Total:</span>
               <span className="ml-1 text-green-600 font-semibold">
-                ₱{booking.total_price.toLocaleString()}
+                ₱{booking.total_price?.toLocaleString()}
               </span>
             </div>
           </div>

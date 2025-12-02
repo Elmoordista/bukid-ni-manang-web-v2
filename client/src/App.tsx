@@ -9,11 +9,6 @@ import RootLayout from "@/components/root-layout";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import React, { Suspense } from "react";
 // Loading component
-const PageLoading = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
-  </div>
-);
 
 // Lazy-loaded pages with loading fallback
 const Home = React.lazy(() => import("./pages/home"));

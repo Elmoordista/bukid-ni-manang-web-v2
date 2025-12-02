@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
+import { format} from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { mockAccommodations } from "@/data/mockData";
-import type { Accommodation } from "@/data/mockData";
 
 interface BlockedDate {
   roomId: string;
@@ -97,17 +96,6 @@ export default function AvailabilityCalendar() {
         date <= block.endDate
     );
   };
-
-  const getBlockReason = (date: Date, roomId: string) => {
-    const block = blockedDates.find(
-      (block) =>
-        block.roomId === roomId &&
-        date >= block.startDate &&
-        date <= block.endDate
-    );
-    return block?.reason || "";
-  };
-
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">

@@ -19,10 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { type Accommodation, checkAvailability, createBooking } from "@/data/mockData";
+import { type Accommodation } from "@/data/mockData";
 import { useAuth } from "@/context/auth-context";
-import { useNotifications } from "@/hooks/use-notifications";
-import { createPayment } from "@/data/mockData";
 
 import HttpClient from "@/lib/axiosInstance.ts";
 
@@ -46,12 +44,15 @@ interface BookingFormData {
   paymentMethod?: string;
   paymentReference?: string;
   paymentAccountName?: string;
+  accommodationId?: string;
+  userId?: string;
+  totalAmount?: number;
+  status?: string;
 }
 
 export default function BookingModal({ isOpen, onClose, room, checkIn = "", checkOut = "", guests = "1" }: BookingModalProps) {
   const { toast } = useToast();
   const { isAuthenticated, user } = useAuth();
-  const { notifyBookingStatus } = useNotifications();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<BookingFormData>({
     guestName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "",
@@ -142,25 +143,6 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
       console.log('Created booking:', created);
       return false;
 
-      await notifyBookingStatus(created.id, "confirmed", {
-        recipientEmail: data.guestEmail,
-        recipientName: data.guestName,
-        checkInDate: data.checkInDate,
-        checkOutDate: data.checkOutDate,
-        totalAmount: calculateTotal(),
-        accommodationName: room.name
-      });
-      onClose();
-      setFormData({
-        guestName: "",
-        guestEmail: "",
-        guestPhone: "",
-        checkInDate: "",
-        checkOutDate: "",
-        guestCount: 1,
-        specialRequests: "",
-      });
-
     } catch (error: any) {
       toast({
         title: "Booking Failed",
@@ -176,7 +158,7 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
      try {
           await HttpClient.post("/front-end/book-room", data);
           toast({ title: "Booking Successful", description: "Your booking has been created successfully." });
-        } catch (error) {
+        } catch (error : any) {
           toast({
             title: "Error",
             description: error.response?.data?.message || "Failed to create booking.",
@@ -204,7 +186,7 @@ export default function BookingModal({ isOpen, onClose, room, checkIn = "", chec
 
   const handlePayment = async (paymentData: any) => {
     try {
-      const booking = await handleCreateBooking({
+      await handleCreateBooking({
         ...formData,
         paymentMethod: paymentData.paymentMethod,
         paymentReference: paymentData.referenceNumber,

@@ -29,17 +29,20 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
-import type { Payment } from "@shared/schema/payment";
+// import type { Payment } from "@shared/schema/payment";
 
 export default function PaymentVerification() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: payments, isLoading: paymentsLoading } = useQuery<Payment[]>({
+  const { data: payments, isLoading: paymentsLoading } = useQuery<any[]>({
     queryKey: ["/api/payments"],
   });
 
-  const { data: bookings } = useQuery({
+  // const { data: bookings } = useQuery({
+  //   queryKey: ["/api/admin/bookings"],
+  // });
+  const { data: bookings } = useQuery<any[]>({
     queryKey: ["/api/admin/bookings"],
   });
 
@@ -84,14 +87,14 @@ export default function PaymentVerification() {
   });
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, string> = {
-      pending: "warning",
-      completed: "success",
-      failed: "destructive",
-      refunded: "default",
-    };
+    // const variants: Record<string, string> = {
+    //   pending: "warning",
+    //   completed: "success",
+    //   failed: "destructive",
+    //   refunded: "default",
+    // };
 
-    return <Badge variant={variants[status]}>{status}</Badge>;
+    return <Badge>{status}</Badge>;
   };
 
   if (paymentsLoading) {

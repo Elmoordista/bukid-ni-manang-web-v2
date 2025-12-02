@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockLogin, mockRegister, mockLogout, mockCheckAuth, initMockAuth } from "@/lib/mock-auth";
+import { mockLogin, mockRegister, mockCheckAuth, initMockAuth } from "@/lib/mock-auth";
 import HttpClient from "@/lib/axiosInstance";
 import Notiflix from "notiflix";
 
@@ -18,6 +18,13 @@ interface User {
   firstName: string;
   lastName: string;
   role: string;
+  photoURL?: string;
+  phone?: string;
+  address?: string;
+  password?: string; // Optional for registration, not returned in user data
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: any; // Allow additional properties
 }
 
 interface AuthContextType {
@@ -75,7 +82,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const register = async (userData: Omit<User, "id"> & { password: string }): Promise<User> => {
+  const register = async (userData: any): Promise<User> => {
+  // const register = async (userData: Omit<User, "id"> & { password: string }): Promise<User> => {
     try {
       console.log('Registration attempt:', { ...userData, password: '[REDACTED]' });
       const newUser = await mockRegister(userData);

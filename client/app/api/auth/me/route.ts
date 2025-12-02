@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+// import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   try {
@@ -15,9 +15,16 @@ export async function GET(request: Request) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    // Return the user data as JSON
+    return new Response(JSON.stringify(data), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    // return NextResponse.json(data);
   } catch (error) {
     console.error('Auth check error:', error);
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
+    // return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }

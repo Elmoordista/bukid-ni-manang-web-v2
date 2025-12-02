@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
-import { useNotifications } from "@/hooks/use-notifications";
+// import { useNotifications } from "@/hooks/use-notifications";
+import { useToast } from "@/hooks/use-toast";
 
 import HttpClient from "@/lib/axiosInstance.ts";
 
@@ -9,10 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Calendar, Plus } from "lucide-react";
-import { mockBookings, mockAccommodations, type Booking, type Accommodation } from "@/data/mockData";
+import {  mockAccommodations,  type Accommodation } from "@/data/mockData";
 
 export default function MyBookings() {
-  const { toast } = useNotifications();
+  const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
@@ -28,13 +29,14 @@ export default function MyBookings() {
 
   // const bookingList = bookings || [];
   const accommodationList = accommodations || [];
+  console.log("Accommodation List:", accommodationList);
 
-  const getAccommodationName = (accommodationId: string) => {
-    const accommodation = accommodationList.find((acc: any) => acc.id === accommodationId);
-    return accommodation?.name;
-  };
+  // const getAccommodationName = (accommodationId: string) => {
+  //   const accommodation = accommodationList.find((acc: any) => acc.id === accommodationId);
+  //   return accommodation?.name;
+  // };
 
-  const fetchMyBookings = async (page = 1) => {
+  const fetchMyBookings = async () => {
       setIsLoading(true);
 
     try {

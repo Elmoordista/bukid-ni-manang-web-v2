@@ -31,6 +31,20 @@ interface Accommodation {
   price: number;
   maxGuests: number;
   available: boolean;
+  price_per_night: number;
+  max_occupancy: number;
+  status: 'available' | 'unavailable';
+  amenities: string;
+  images: [];
+  description: string;
+  bedrooms: number;
+  bathrooms: number;
+  created_at: string;
+  updated_at: string;
+  rating: number;
+  reviews: number;
+  number_of_bathrooms: number;
+  number_of_beds: number;
 }
 
 interface RoomFormData {
@@ -50,7 +64,7 @@ interface RoomFormData {
 export default function RoomManagement() {
   const { toast } = useToast();
   // const {user} = useToast();
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] =useState<Accommodation[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Accommodation | null>(null);

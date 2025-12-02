@@ -1,4 +1,4 @@
-import { CheckCircle, Star, Waves, Utensils, Flower, Heart, Mountain, Sparkles, Flame, Car, Target, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Play } from "lucide-react";
+import { CheckCircle, Star, Waves, Utensils, Flower, Heart, Mountain, Sparkles, Flame, Car, Target, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter } from "lucide-react";
 const mainTourImage = "/images/IMG_9191_1756782230937.jpeg";
 const poolImage = "/images/IMG_9196_1756782230937.jpeg";
 const restaurantImage = "/images/IMG_9193_1756782230937.jpeg";

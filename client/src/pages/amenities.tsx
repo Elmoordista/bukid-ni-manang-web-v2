@@ -13,10 +13,10 @@ import {
   Car,
   Bus,
   Search,
-  Filter,
+  // Filter,
   X,
-  PartyPopper,
-  Pool as PoolIcon
+  // PartyPopper,
+  // Pool as PoolIcon
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,7 +35,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   PoolBookingForm,
   RestaurantBookingForm,

@@ -39,8 +39,8 @@ export default function VirtualTour() {
         defaultPitch: 0,
         moveSpeed: 1.5,
         zoomSpeed: 1.5,
-        useXmpData: false,
-        preload: true,
+        // useXmpData: false,
+        // preload: true,
         requestHeaders: {
           'Cache-Control': 'max-age=3600'
         }

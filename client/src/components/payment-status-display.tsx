@@ -3,14 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { CreditCard } from "lucide-react";
-import type { Payment } from "@shared/schema/payment";
+// import type { Payment } from "@shared/schema/payment";
 
 interface PaymentStatusDisplayProps {
   bookingId: string;
 }
 
 export default function PaymentStatusDisplay({ bookingId }: PaymentStatusDisplayProps) {
-  const { data: payments } = useQuery<Payment[]>({
+  const { data: payments } = useQuery<any[]>({
     queryKey: [`/api/bookings/${bookingId}/payments`],
   });
 
@@ -19,14 +19,14 @@ export default function PaymentStatusDisplay({ bookingId }: PaymentStatusDisplay
   }
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, string> = {
-      pending: "warning",
-      completed: "success",
-      failed: "destructive",
-      refunded: "default",
-    };
+    // const variants: Record<string, string> = {
+    //   pending: "warning",
+    //   completed: "success",
+    //   failed: "destructive",
+    //   refunded: "default",
+    // };
 
-    return <Badge variant={variants[status]}>{status}</Badge>;
+    return <Badge>{status}</Badge>;
   };
 
   return (

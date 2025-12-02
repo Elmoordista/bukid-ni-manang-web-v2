@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BookingManagementComponent from "@/components/admin/booking-management";
-import type { Booking } from "@/data/mockData";
-import { mockBookings } from "@/data/mockData";
+// import type { Booking } from "@/data/mockData";
+// import { mockBookings } from "@/data/mockData";
 
 import HttpClient from "@/lib/axiosInstance.ts";
-import { p } from "node_modules/@tanstack/query-core/build/modern/hydration-CeGZtiZv";
+// import { p } from "node_modules/@tanstack/query-core/build/modern/hydration-CeGZtiZv";
 
 export default function BookingManagement() {
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState<any[]>([]);
   // const [bookings, setBookings] = useState<Booking[]>(mockBookings);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function BookingManagement() {
     // }
     // Refetch bookings after update
     setBookings(previousBookings => {
-      return previousBookings.map((booking: Booking) =>
+      return previousBookings.map((booking: any) =>
         booking.id === bookingId ? { ...booking, status, admin_notes: notes } : booking
       );
     });

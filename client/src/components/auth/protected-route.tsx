@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
-  const { isAuthenticated, loading, user } = useAuth();
+  const { loading, user } = useAuth();
 
   if (loading) {
     return <Spinner />;

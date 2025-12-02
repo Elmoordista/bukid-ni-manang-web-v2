@@ -1,27 +1,29 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
-import { toast } from "@/src/components/ui/use-toast";
+// import { useRouter } from "react-router-dom";
+import { useNavigate  } from "react-router-dom";
+import { useAuth } from "@/hooks/auth-provider";
+import { toast } from "@/components/ui/use-toast";
 
 export default function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading, isAuthenticated } = useAuth();
-  const router = useRouter();
-
+  const { user, isLoading, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   useEffect(() => {
-    if (!loading && (!isAuthenticated || user?.role !== "admin")) {
+    if (!isLoading && (!isAuthenticated || user?.role !== "admin")) {
     window.location.href = "/login";
       toast({
         title: "Unauthorized",
         description: "Admin access required.",
         variant: "destructive",
       });
-      router.replace("/login");
+      // router.replace("/login");
+      navigate("/login", { replace: true });
+      
     }
-  }, [loading, isAuthenticated, user, router]);
+  }, [isLoading, isAuthenticated, user]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

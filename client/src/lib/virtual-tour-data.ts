@@ -212,7 +212,7 @@ export const VIRTUAL_TOUR_LOCATIONS = [
         type: 'nav-marker',
         description: "Scenic Resort Grounds"
       }
-    ]
+    ],
   },
   {
     id: "main-entrance",

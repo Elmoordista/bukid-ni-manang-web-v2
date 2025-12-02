@@ -29,7 +29,7 @@ export default function BookingManagement() {
     return () => clearTimeout(timer);
   }, []);
 
-  const getUserById = (userId: string) => {
+  const getUserById = (userId: any) => {
     return mockUsers.find(user => user.id === userId) || { firstName: 'Unknown', lastName: 'User', email: 'unknown@email.com' };
   };
 

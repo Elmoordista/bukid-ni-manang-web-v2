@@ -20,14 +20,13 @@ export default function AdminBookingManagement({ booking, accommodationName }: B
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const handleUpdateBooking = async (status: string, reason?: string) => {
+  const handleUpdateBooking = async (status: string) => {
     setIsUpdating(true);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       const statusText = status === 'confirmed' ? 'approved' : status;
-      const guestName = booking.userId; // Using userId as fallback since guestName doesn't exist in mockData
       
       toast({
         title: `Booking ${statusText}`,
@@ -54,7 +53,7 @@ export default function AdminBookingManagement({ booking, accommodationName }: B
   };
 
   const handleReject = () => {
-    handleUpdateBooking('rejected', rejectionReason);
+    handleUpdateBooking('rejected');
   };
 
   const getStatusBadge = (status: string | null) => {

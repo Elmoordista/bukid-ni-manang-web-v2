@@ -1,16 +1,16 @@
 import { format } from "date-fns";
 import { RESORT_INFO } from "@/lib/constants";
-import type { Payment } from "@shared/schema/payment";
-import type { Booking } from "@shared/schema";
+// import type { Payment } from "@shared/schema/payment";
+// import type { Booking } from "@shared/schema";
 
 interface PaymentReceiptProps {
-  payment: Payment;
-  booking: Booking;
+  payment: any;
+  booking: any;
 }
 
 export function generateReceiptHTML({ payment, booking }: PaymentReceiptProps) {
   const receiptDate = format(new Date(), "MMMM d, yyyy");
-  const paymentDate = format(new Date(payment.paymentDate), "MMMM d, yyyy h:mm a");
+  const paymentDate = format(new Date(payment?.paymentDate), "MMMM d, yyyy h:mm a");
 
   return `
     <!DOCTYPE html>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Bed, CreditCard, Settings2, Menu } from "lucide-react";
+import { Calendar, Bed, CreditCard, Settings2 } from "lucide-react";
 import type { Booking } from "@/data/mockData";
-import { mockBookings } from "@/data/mockData";
+// import { mockBookings } from "@/data/mockData";
 import { useAuth } from "@/context/auth-context";
 import { RESORT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState<any>([]);
   const [pendingBookings, setPendingBookings] = useState([])
   const [confirmedBookings, setConfirmedBookings] = useState([])
   const [available_room, setAvailableRoom] = useState([])
@@ -25,18 +25,19 @@ export default function AdminDashboard() {
   const [todayBookings, setTodayBookings] = useState<Booking[]>([]);
 
   
-  const [roomAvailability, setRoomAvailability] = useState({
-    kubo: { total: 5, available: 3, rate: "₱2,500" },
-    gazebo: { total: 3, available: 1, rate: "₱3,500" },
-    function_hall: { total: 1, available: 1, rate: "₱15,000" }
-  });
-  const currentDate = new Date();
+  // const [roomAvailability, setRoomAvailability] = useState({
+  //   kubo: { total: 5, available: 3, rate: "₱2,500" },
+  //   gazebo: { total: 3, available: 1, rate: "₱3,500" },
+  //   function_hall: { total: 1, available: 1, rate: "₱15,000" }
+  // });
+  // const currentDate = new Date();
 
   useEffect(() => {
+    setConfirmedBookings(confirmedBookings)
     // Simulate API calls
     fetchDashboardData();
   }, []);
-  const fetchDashboardData = async (page = 1) => {
+  const fetchDashboardData = async () => {
     Notiflix.Loading.standard('Loading dashboard data...');
     try {
       const res = await HttpClient.get(`/dashboard`);
@@ -64,23 +65,23 @@ export default function AdminDashboard() {
   // });
   
   // Calculate revenue metrics
-  const totalRevenue = confirmedBookings.reduce((sum, booking) => 
-    sum + (parseFloat(booking.totalAmount?.toString() || "0")), 0
-  );
-  const monthlyRevenue = confirmedBookings.reduce((sum, booking) => {
-    const bookingDate = new Date(booking.checkInDate);
-    if (bookingDate.getMonth() === currentDate.getMonth()) {
-      return sum + (parseFloat(booking.totalAmount?.toString() || "0"));
-    }
-    return sum;
-  }, 0);
+  // const totalRevenue = confirmedBookings.reduce((sum, booking) => 
+  //   sum + (parseFloat(booking.totalAmount?.toString() || "0")), 0
+  // );
+  // const monthlyRevenue = confirmedBookings.reduce((sum, booking) => {
+  //   const bookingDate = new Date(booking.checkInDate);
+  //   if (bookingDate.getMonth() === currentDate.getMonth()) {
+  //     return sum + (parseFloat(booking.totalAmount?.toString() || "0"));
+  //   }
+  //   return sum;
+  // }, 0);
 
   const handleUpdateBookingStatus = async (bookingId: number, newStatus: string) => {
     Notiflix.Loading.standard('Updating booking status...');
     try {
       await HttpClient.patch(`/booking/${bookingId}`, { status: newStatus });
       // Update local state
-      const updatedBookings = bookings.map(b => 
+      const updatedBookings = bookings.map((b: any) => 
         b.id === bookingId ? { ...b, status: newStatus } : b
       );
       setBookings(updatedBookings);
@@ -176,7 +177,7 @@ export default function AdminDashboard() {
               {pendingBookings.length} Pending
             </div>
             <div className="text-sm text-muted-foreground">
-              Total Amount: ₱{(pendingBookings.reduce((sum, booking) => 
+              Total Amount: ₱{(pendingBookings.reduce((sum, booking : any) => 
                 sum + (parseFloat(booking.total_price?.toString() || "0")), 0
               )).toLocaleString()}
             </div>
@@ -199,7 +200,7 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-center h-32">
                   <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
                 </div>
-              ) : bookings.slice(0, 3).map((booking) => (
+              ) : bookings.slice(0, 3).map((booking : any) => (
                 <div key={booking.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
                      onClick={() => navigate(`/admin/bookings/${booking.id}`)}>
                   <div className="bg-primary/10 p-2 rounded-full">
@@ -250,7 +251,7 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {available_room.map((type, data) => (
+                {available_room.map((type: any, data: any) => (
                 // {Object.entries(roomAvailability).map(([type, data]) => (
                   <div 
                     key={type} 

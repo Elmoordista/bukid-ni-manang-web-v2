@@ -12,7 +12,6 @@ interface GoogleMapsProps {
 export default function GoogleMaps({ className = "" }: GoogleMapsProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [directions, setDirections] = useState<any>(null);
   const [distance, setDistance] = useState<string>('');
   const [duration, setDuration] = useState<string>('');
   const [showDirections, setShowDirections] = useState(false);
@@ -196,7 +195,6 @@ export default function GoogleMaps({ className = "" }: GoogleMapsProps) {
           (result: any, status: any) => {
             if (status === 'OK' && result?.routes?.length > 0) {
               directionsRenderer.setDirections(result);
-              setDirections(result);
               const route = result.routes[0];
               if (route?.legs?.length > 0) {
                 setDistance(route.legs[0].distance.text);
@@ -235,7 +233,7 @@ export default function GoogleMaps({ className = "" }: GoogleMapsProps) {
             description: "Your location has been detected. Click 'Show Directions' to get driving directions.",
           });
         },
-        (error) => {
+        () => {
           toast({
             title: "Location Access Denied",
             description: "Unable to access your location. You can still view the resort location on the map.",

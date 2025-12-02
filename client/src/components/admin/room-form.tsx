@@ -60,38 +60,14 @@ interface RoomFormProps {
 export function RoomForm({ room, onSubmit, mode }: RoomFormProps) {
   const [newAmenity, setNewAmenity] = useState("");
 
-  const handleExtractImages = (images: string[]) => {
+  const handleExtractImages = (images: {
+    image_url: string;
+  }[]) => {
     return images.map((img)=>{
-      return img.image_url;
+      return img?.image_url;
     });
   }
 
-  // const form = useForm<RoomFormData>({
-  //   resolver: zodResolver(formSchema),
-  //   defaultValues: room ? {
-  //     name: room.name,
-  //     description: room.description,
-  //     price: room.price_per_night,
-  //     maxGuests: room.max_occupancy,
-  //     bedrooms: room.number_of_beds,
-  //     bathrooms: room.number_of_bathrooms,
-  //     amenities: room.amenities ? JSON.parse(room.amenities) : [],
-  //     images: room.images && room.images.length > 0 ? handleExtractImages(room.images) : [],
-  //     available: room.status,
-  //     location: room.location,
-  //   } : {
-  //     name: "",
-  //     description: "",
-  //     price: 0,
-  //     maxGuests: 1,
-  //     bedrooms: 1,
-  //     bathrooms: 1,
-  //     amenities: [],
-  //     images: [],
-  //     available: true,
-  //     location: "",
-  //   }
-  // });
 
   const form = useForm<RoomFormData>({
     resolver: zodResolver(formSchema),

@@ -13,7 +13,6 @@ import {
   Settings,
   Bell,
   HelpCircle,
-  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
@@ -313,7 +312,7 @@ export default function AdminNavigation() {
           mobileMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
         }`}>
           <div className="py-4 px-4 space-y-2 max-h-[calc(100vh-80px)] overflow-y-auto">
-            {navItems.map((item, index) => (
+            {navItems.map((item) => (
               item.isSettings ? (
                 <Link
                   key={item.href}

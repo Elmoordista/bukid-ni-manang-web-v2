@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
-import { Mail, MessageSquare, Bell } from "lucide-react";
+import { Mail, MessageSquare } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 interface NotificationSettings {

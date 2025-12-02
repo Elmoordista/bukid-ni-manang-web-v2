@@ -33,7 +33,7 @@ const formSchema = z.object({
 export default function LoginForm() {
   const {toast} = useToast();
   const navigate = useNavigate();
-  const { login, handleSetUser } = useAuth();
+  const { handleSetUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -69,7 +69,7 @@ export default function LoginForm() {
           }
         }
          
-        } catch (error) {
+        } catch (error : any) {
           console.log('Login error:', error.response?.data?.message);
            toast({
             title: "Login Failed",

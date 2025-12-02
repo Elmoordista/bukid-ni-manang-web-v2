@@ -25,8 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { format, subDays, isWithinInterval, parseISO } from "date-fns";
-import { Download, Filter } from "lucide-react";
-import type { Payment } from "@shared/schema/payment";
+import { Download } from "lucide-react";
+// import type { Payment } from "@shared/schema/payment";
 
 const DATE_RANGES = {
   "7days": { label: "Last 7 Days", days: 7 },
@@ -40,10 +40,12 @@ export default function PaymentReport() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: payments = [] } = useQuery<Payment[]>({
+  // const { data: payments = [] } = useQuery<Payment[]>({
+  //   queryKey: ["/api/payments"],
+  // });
+  const { data: payments = [] } = useQuery<any[]>({
     queryKey: ["/api/payments"],
   });
-
   const filteredPayments = payments.filter((payment) => {
     // Date filter
     if (dateRange !== "all") {

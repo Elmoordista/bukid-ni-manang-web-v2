@@ -45,19 +45,19 @@ export default function VirtualTourModal({ isOpen, onClose }: VirtualTourModalPr
         requestHeaders: {
           'Cache-Control': 'max-age=3600'
         },
-        markers: (currentLocation.hotspots || []).map(hotspot => ({
-          id: hotspot.id,
-          position: { yaw: hotspot.yaw, pitch: hotspot.pitch },
-          html: `<div class="psv-marker psv-marker--fixed psv-hotspot-arrow bg-black/60 text-white">${hotspot.label}</div>`,
-          tooltip: hotspot.description,
-          width: 32,
-          height: 32,
-          anchor: 'center center',
-          style: {
-            cursor: 'pointer',
-            pointerEvents: 'auto'
-          }
-        }))
+        // markers: (currentLocation.hotspots || []).map(hotspot => ({
+        //   id: hotspot.id,
+        //   position: { yaw: hotspot.yaw, pitch: hotspot.pitch },
+        //   html: `<div class="psv-marker psv-marker--fixed psv-hotspot-arrow bg-black/60 text-white">${hotspot.label}</div>`,
+        //   tooltip: hotspot.description,
+        //   width: 32,
+        //   height: 32,
+        //   anchor: 'center center',
+        //   style: {
+        //     cursor: 'pointer',
+        //     pointerEvents: 'auto'
+        //   }
+        // }))
       });
       // markers plugin is optional and not installed here; use overlay hotspots by default
       markersPluginRef.current = null;
@@ -80,30 +80,31 @@ export default function VirtualTourModal({ isOpen, onClose }: VirtualTourModalPr
       if (pluginClass) {
         try {
           const plugin = photoSphereViewerRef.current.getPlugin(pluginClass);
-          if (plugin) {
-            const newMarkers = (currentLocation as any).hotspots?.map((h: any) => ({
-              id: h.id,
-              longitude: (h.yaw * Math.PI) / 180,
-              latitude: (h.pitch * Math.PI) / 180,
-              width: 40,
-              height: 40,
-              anchor: 'center',
-              tooltip: h.label,
-              data: { targetId: h.targetId },
-              content: `<div class="psv-hotspot-arrow" data-id="${h.id}">➤</div>`,
-            })) || [];
-            plugin.clearMarkers();
-            plugin.addMarkers(newMarkers as any);
-            plugin.on('select-marker', (e: any) => {
-              const targetId = e.marker.data?.targetId;
-              if (targetId) {
-                const idx = VIRTUAL_TOUR_LOCATIONS.findIndex((l) => l.id === targetId);
-                if (idx >= 0) setCurrentLocationIndex(idx);
-              }
-            });
-            setOverlayHotspots([]);
-            return;
-          }
+          console.log(plugin)
+          // if (plugin) {
+          //   const newMarkers = (currentLocation as any).hotspots?.map((h: any) => ({
+          //     id: h.id,
+          //     longitude: (h.yaw * Math.PI) / 180,
+          //     latitude: (h.pitch * Math.PI) / 180,
+          //     width: 40,
+          //     height: 40,
+          //     anchor: 'center',
+          //     tooltip: h.label,
+          //     data: { targetId: h.targetId },
+          //     content: `<div class="psv-hotspot-arrow" data-id="${h.id}">➤</div>`,
+          //   })) || [];
+          //   plugin.clearMarkers();
+          //   plugin.addMarkers(newMarkers as any);
+          //   plugin.on('select-marker', (e: any) => {
+          //     const targetId = e.marker.data?.targetId;
+          //     if (targetId) {
+          //       const idx = VIRTUAL_TOUR_LOCATIONS.findIndex((l) => l.id === targetId);
+          //       if (idx >= 0) setCurrentLocationIndex(idx);
+          //     }
+          //   });
+          //   setOverlayHotspots([]);
+          //   return;
+          // }
         } catch (err) {
           console.warn('Markers plugin failed in modal; falling back to overlays', err);
         }

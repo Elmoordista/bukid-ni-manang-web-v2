@@ -33,6 +33,9 @@ interface User {
   name: string;
   email: string;
   role: "admin" | "user";
+  account_type: "admin" | "user";
+  created_at?: string;
+  updated_at?: string;
   status: "active" | "inactive" | "suspended";
   lastLogin?: string;
 }
@@ -55,7 +58,7 @@ export default function UserManagement() {
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
-    role: "user" as const,
+    role: "user" as "admin" | "user",
     password: "",
   });
 
@@ -112,7 +115,7 @@ export default function UserManagement() {
     }
 
     try {
-      const { data } = await HttpClient.post(`/user`, {
+      await HttpClient.post(`/user`, {
         ...newUser,
         account_type: newUser.role,
       });
@@ -120,7 +123,7 @@ export default function UserManagement() {
       setIsAddUserOpen(false);
       setNewUser({ name: "", email: "", role: "user", password: "" });
       fetchUsers(); // refresh
-    } catch (error) {
+    } catch (error : any) {
       toast({
         title: "Error",
         description: error?.response?.data?.message || "Failed to add user.",

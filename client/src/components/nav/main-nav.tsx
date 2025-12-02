@@ -8,7 +8,7 @@ import { RESORT_INFO } from "@/lib/constants";
 export function MainNav() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated, loading, logout } = useAuth();
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -48,7 +48,7 @@ export function MainNav() {
                 {item.label}
               </Link>
             ))}
-            {!isLoading && !isAuthenticated ? (
+            {!loading && !isAuthenticated ? (
               <>
                 <Link to="/login">
                   <Button variant="ghost" data-testid="button-login">

@@ -1,4 +1,10 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { 
+  AxiosError, 
+  AxiosInstance, 
+  // AxiosRequestConfig, 
+  AxiosResponse, 
+  // InternalAxiosRequestConfig
+} from "axios";
 
 const HttpClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL as string,
@@ -9,15 +15,27 @@ const HttpClient: AxiosInstance = axios.create({
   },
 });
 
-HttpClient.interceptors.request.use((config: AxiosRequestConfig) => {
+// HttpClient.interceptors.request.use((config: AxiosRequestConfig) => {
+//   const token = localStorage.getItem("token");
+//   if (config.headers) {
+//     config.headers.Authorization = token ? `Bearer ${token}` : "";
+//   } else {
+//     config.headers = {
+//       Authorization: token ? `Bearer ${token}` : "",
+//     };
+//   }
+//   return config;
+// });
+
+HttpClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (config.headers) {
-    config.headers.Authorization = token ? `Bearer ${token}` : "";
-  } else {
-    config.headers = {
-      Authorization: token ? `Bearer ${token}` : "",
-    };
-  }
+
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Set auth header properly
+  config.headers['Authorization'] = token ? `Bearer ${token}` : "";
+
   return config;
 });
 

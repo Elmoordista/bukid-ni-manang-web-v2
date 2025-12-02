@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from 'react';
-import Image from 'next/image';
+import { useState } from 'react';
+// import Image from 'react-image';
 
 const tourLocations = [
   {
@@ -34,7 +34,7 @@ export default function VirtualTourPage() {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Image Section */}
-            <div className="relative rounded-lg overflow-hidden aspect-video bg-gray-200">
+            {/* <div className="relative rounded-lg overflow-hidden aspect-video bg-gray-200">
               <Image 
                 src={tourLocations[selectedLocation].image}
                 alt={tourLocations[selectedLocation].name}
@@ -43,7 +43,7 @@ export default function VirtualTourPage() {
                 sizes="(max-width: 768px) 100vw, 50vw"
                 priority
               />
-            </div>
+            </div> */}
 
             {/* Info Section */}
             <div>
@@ -70,13 +70,13 @@ export default function VirtualTourPage() {
               }`}
             >
               <div className="relative aspect-video mb-2">
-                <Image 
+                {/* <Image 
                   src={location.image}
                   alt={location.name}
                   fill
                   className="object-cover rounded-lg"
                   sizes="(max-width: 768px) 50vw, 33vw"
-                />
+                /> */}
               </div>
               <h3 className="font-semibold mt-2">{location.name}</h3>
             </button>

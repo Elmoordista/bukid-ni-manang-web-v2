@@ -30,9 +30,9 @@ export default function PaymentManagement() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [downloading, setDownloading] = useState(false);
+  // const [downloading, setDownloading] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
@@ -72,7 +72,7 @@ export default function PaymentManagement() {
   const handleUpdateStatus = async (paymentId: string, newStatus: Payment["status"]) => {
      try {
       setLoading(true);
-        const response = await HttpClient.put("/payment/" + paymentId,{
+        await HttpClient.put("/payment/" + paymentId,{
           status: newStatus
         });
         toast({
@@ -214,7 +214,7 @@ export default function PaymentManagement() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {payments.length > 0 && payments.map((p) => (
+                  {payments.length > 0 && payments.map((p : any) => (
                     <TableRow key={p.id}>
                       <TableCell>{p.reference_number}</TableCell>
                       <TableCell>{p.booking_id}</TableCell>

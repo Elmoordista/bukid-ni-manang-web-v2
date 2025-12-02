@@ -39,4 +39,21 @@ export interface Booking {
   createdAt: string;
   paymentStatus?: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod?: 'gcash' | 'cash' | 'bank-transfer';
+  guestId?: string;
+  transactionId?: string;
+  start_date?: string;
+  end_date?: string;
+  guest_count?: string;
+  user?: {
+    name: string;
+    email: string;
+  };
+  accommodation?: {
+    name: string;
+    type: string;
+  };
+  contact_number?: string;
+  guest_request?: string;
+  created_at?: string;
+  total_price?: number;
 }

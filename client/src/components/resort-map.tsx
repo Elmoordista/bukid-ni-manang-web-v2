@@ -3,8 +3,8 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RESORT_OVERVIEW_IMAGE, RESORT_LOCATIONS } from '@/lib/virtual-tour-data';
-import Image from 'next/image';
+import {  RESORT_LOCATIONS } from '@/lib/virtual-tour-data';
+// import Image from 'next/image';
 import { PanoramaViewer } from './ui/panorama-viewer';
 import { Camera, MapPin, Users, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -15,7 +15,8 @@ export interface ResortMapProps {
 }
 
 export function ResortMap({ onLocationSelect, className }: ResortMapProps) {
-  const [selectedLocation, setSelectedLocation] = useState<typeof RESORT_LOCATIONS[0] | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
+  // const [selectedLocation, setSelectedLocation] = useState<typeof RESORT_LOCATIONS[0] | null>(null);
   const [selectedView, setSelectedView] = useState<'info' | 'panorama' | 'booking'>('info');
 
   const handleLocationClick = (location: typeof RESORT_LOCATIONS[0]) => {
@@ -50,13 +51,13 @@ export function ResortMap({ onLocationSelect, className }: ResortMapProps) {
         
         {/* Main Overview Image */}
         <div className="relative aspect-[16/9]">
-          <Image
+          {/* <Image
             src={RESORT_OVERVIEW_IMAGE}
             alt="Resort Overview"
             fill
             className="object-cover"
             priority
-          />
+          /> */}
 
           {/* Location Markers */}
           {RESORT_LOCATIONS.map((location) => (
@@ -122,14 +123,14 @@ export function ResortMap({ onLocationSelect, className }: ResortMapProps) {
           <DialogContent className="max-w-3xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Preview Image */}
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+              {/* <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
                 <Image
                   src={selectedLocation.thumbnail}
                   alt={selectedLocation.name}
                   fill
                   className="object-cover"
                 />
-              </div>
+              </div> */}
 
               {/* Location Details */}
               <div className="flex flex-col">
@@ -154,7 +155,7 @@ export function ResortMap({ onLocationSelect, className }: ResortMapProps) {
                   <div className="mb-6">
                     <h3 className="font-medium mb-2">Available Features</h3>
                     <div className="flex flex-wrap gap-2">
-                      {selectedLocation.facilities.map((facility) => (
+                      {selectedLocation.facilities.map((facility: string) => (
                         <Badge key={facility} variant="secondary">
                           {facility}
                         </Badge>

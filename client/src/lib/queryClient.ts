@@ -1,7 +1,7 @@
 // Temporary compatibility file for old apiRequest imports
 // This provides mock functions until all files are updated to use static data
 
-export async function apiRequest(url: string, options?: RequestInit): Promise<any> {
+export async function apiRequest(url: string): Promise<any> {
   // Mock API responses based on the URL
   const mockDelay = () => new Promise(resolve => setTimeout(resolve, 200));
   
@@ -51,7 +51,7 @@ export function useMutation(config: any) {
   };
 }
 
-export function useQuery(config: any) {
+export function useQuery() {
   return {
     data: null,
     isLoading: false,

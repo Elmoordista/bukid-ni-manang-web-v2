@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Mail, MessageSquare, Bell } from "lucide-react";
+import { Mail} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Notiflix from "notiflix";
 import HttpClient from "@/lib/axiosInstance.ts";
@@ -185,7 +185,7 @@ export default function NotificationSettings() {
           description: `A test email has been sent to ${testEmail}.`,
         });
         setIsEmailModalOpen(false);
-      } catch (error) {
+      } catch (error : any) {
         toast({
           title: "Error",
           description: error.response?.data?.message || "There was an error sending the test email. Please try again.",
