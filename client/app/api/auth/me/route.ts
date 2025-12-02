@@ -3,7 +3,7 @@
 export async function GET(request: Request) {
   try {
     // Forward the request to the backend API
-    const response = await fetch('http://127.0.0.1:8000/api/auth/me', {
+    const response = await fetch('https://bukid-ni-manang-api.onrender.com/api/auth/me', {
       headers: {
         cookie: request.headers.get('cookie') || '',
       },

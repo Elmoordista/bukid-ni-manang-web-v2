@@ -13,7 +13,7 @@ export function PoolAreaMap({ onLocationSelect }: PoolAreaMapProps) {
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // const POOL_OVERVIEW_IMAGE = '/images/pool-overview.jpg';
+  const POOL_OVERVIEW_IMAGE = '/images/pool-overview.jpg';
   const POOL_LOCATIONS = [
     {
       id: 'location1',
@@ -36,13 +36,11 @@ export function PoolAreaMap({ onLocationSelect }: PoolAreaMapProps) {
   return (
     <div className="relative w-full aspect-[16/9] bg-muted rounded-lg overflow-hidden">
       {/* Main overview image */}
-      {/* <Image
-        src={POOL_OVERVIEW_IMAGE ? POOL_OVERVIEW_IMAGE : '/images/pool-overview-placeholder.jpg'}
+      <img
+        src={POOL_OVERVIEW_IMAGE}
         alt="Pool Area Overview"
-        width={1600}
-        height={900}
-        className="object-cover"
-      /> */}
+        className="object-cover w-full h-full"
+      />
 
       {/* Clickable location markers */}
       {POOL_LOCATIONS?.map((location: any) => (
@@ -83,12 +81,10 @@ export function PoolAreaMap({ onLocationSelect }: PoolAreaMapProps) {
               <p className="text-muted-foreground mb-4">{selectedLocation.description}</p>
               
               {/* <div className="mb-4">
-                <Image
+                <img
                   src={selectedLocation.thumbnail}
                   alt={selectedLocation.name}
-                  width={800}
-                  height={450}
-                  className="rounded-lg"
+                  className="object-cover rounded-lg w-full h-48"
                 />
               </div> */}
 

@@ -198,9 +198,9 @@ export function ResortMap({ onLocationSelect, className }: ResortMapProps) {
               panoramaUrl={selectedLocation.panoramaUrl}
               locationName={selectedLocation.name}
               description={selectedLocation.description}
-              facilities={selectedLocation.facilities}
-              price={selectedLocation.price}
-              maxGuests={selectedLocation.maxGuests}
+              facilities={(selectedLocation as any).facilities || []}
+              price={(selectedLocation as any).price || 0}
+              maxGuests={(selectedLocation as any).maxGuests || 1}
               onBook={selectedLocation.type === 'accommodation' ? () => setSelectedView('booking') : undefined}
             />
           </DialogContent>

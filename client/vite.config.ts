@@ -5,13 +5,21 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-toast']
+        }
+      }
+    }
+  },
   resolve: {
     alias: [
-      { find: '@', replacement: path.resolve(__dirname, './src') },
-      { find: '@shared', replacement: path.resolve(__dirname, '../shared') },
-      { find: '@assets', replacement: path.resolve(__dirname, '../attached_assets') },
-      { find: '@app', replacement: path.resolve(__dirname, './app') },
-      { find: '@components', replacement: path.resolve(__dirname, './components') }
+      { find: '@', replacement: path.resolve(__dirname, './src') }
     ]
   },
   base: '/',
@@ -21,7 +29,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'https://bukid-ni-manang-api.onrender.com',
         changeOrigin: true,
         secure: false
       }

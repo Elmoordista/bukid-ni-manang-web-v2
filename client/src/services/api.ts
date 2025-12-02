@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // Base API configuration
-const API_BASE_URL = 'http://127.0.0.1:8000'; // Your Laravel backend URL
+const API_BASE_URL = 'https://bukid-ni-manang-api.onrender.com'; // Your Laravel backend URL
+// const API_BASE_URL = 'https://bukid-ni-manang-api.onrender.com'; // Your Laravel backend URL
 
 // Create axios instance
 export const api = axios.create({
